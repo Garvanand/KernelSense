@@ -142,6 +142,7 @@
 | 2026-07-05 | **Frontend Core Foundation (Prompt 11)**                | Setup Next.js App Router, Tailwind glassmorphism design system, typed API client with `X-Access-Level` interception, and access-level selector. |
 | 2026-07-06 | **Process Visualization Engine (Prompt 12)**            | Built React Flow dagre-layout process tree, SWR polling diff engine for animations, and access-level gated detail panel. |
 | 2026-07-06 | **Memory Visualization Engine (Prompt 13)**             | Created system memory block pressure animation and D3.js leak charts overlaying AI predictions with LLM diagnostic cards. |
+| 2026-07-06 | **Scheduler Visualization Engine (Prompt 14)**          | Constructed 16-core CPU heatmap, optimized context-switch stream, and access-gated eBPF raw event logger. |
 
 ---
 
@@ -187,3 +188,7 @@
 | `backend/app/api/memory.py`  | Aggregates system memory telemetry and leak predictions| Prompt 13 |
 | `frontend/components/memory-map/` | System memory block pressure framer-motion visuals     | Prompt 13 |
 | `frontend/components/leak-timeline/` | D3.js historical memory charts with prediction overlays| Prompt 13 |
+| `backend/app/api/scheduler.py` | Distributes per-core CPU load and OS telemetry stream  | Prompt 14 |
+| `frontend/app/scheduler/page.tsx`| Master CPU scheduler UI container page                 | Prompt 14 |
+| `frontend/components/core-heatmap/`| Framer-motion animated 16-core visualizer              | Prompt 14 |
+| `frontend/components/scheduler/`| Access-gated raw event terminal (`kernel` clearance)   | Prompt 14 |

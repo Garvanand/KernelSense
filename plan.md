@@ -22,7 +22,8 @@
 | **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ✅ Done |
 | **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ✅ Done |
 | **13** | Process Details/Graphs         | Memory graph implementations                                                   | ✅ Done |
-| **14** | Scheduler Engine               | CPU cores, context switches, run-queue visualizations                          | ⬜ Next |
+| **14** | Scheduler Engine               | CPU cores, context switches, run-queue visualizations                          | ✅ Done |
+| **15** | Prediction Engine UI           | LLM bounded root-cause explanation engine integrated in UI                     | ⬜ Next |
 
 ---
 

@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
-export type AccessLevel = "guest" | "power" | "research"
+export type AccessLevel = "guest" | "power" | "kernel" | "research"
 
 interface AccessLevelState {
   level: AccessLevel
