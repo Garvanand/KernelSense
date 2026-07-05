@@ -2,7 +2,7 @@
 
 > **"Your operating system, understood and foreseen."**
 >
-> Last updated: 2026-07-05 · Prompt 7 (Runtime Instrumentation Layer)
+> Last updated: 2026-07-05 · Prompt 8 (FastAPI Backend Foundation)
 >
 > **Project selection finalized: 2026-07-05. Architecture locked: 2026-07-05.**
 
@@ -136,6 +136,7 @@
 | 2026-07-05 | **Architecture locked — system design complete**         | 14 OS concepts mapped to 122 telemetry fields + 43 UI surfaces; 6 ADRs accepted; schema defined |
 | 2026-07-05 | **Dataset Sources Locked (Prompt 6)**                   | LTTng downloaded; Zenodo returned 403 and was logged in KNOWN_LIMITATIONS.md instead of faking data |
 | 2026-07-05 | **Instrumentation Layer Implemented (Prompt 7)**        | Unified schema, psutil baseline (all), eBPF with fallback (Linux), ETW/SIP stubs (Win/Mac). Win benchmark fails CPU budget due to psutil API constraints. |
+| 2026-07-05 | **FastAPI Backend Foundation (Prompt 8)**               | DB models, async telemetry ingest worker, and core REST API endpoints built. Soak test passed with 14MB startup allocation (no continuous leak). |
 
 ---
 
@@ -160,4 +161,7 @@
 | `backend/app/instrumentation/` | Live telemetry collectors, schema, sampler, consent    | Prompt 7 |
 | `backend/app/tests/test_instrumentation.py` | Unit tests for cross-platform schema logic   | Prompt 7 |
 | `backend/app/tests/live_benchmark.py` | CPU overhead measurement script                   | Prompt 7 |
-| `PERFORMANCE.md`             | Live benchmark results (CPU overhead budget)           | Prompt 7 |
+| `PERFORMANCE.md`             | Live benchmark results (CPU overhead budget)           | Prompt 7,8 |
+| `backend/app/db/models/`     | SQLAlchemy time-series data models                     | Prompt 8 |
+| `backend/app/workers/`       | Async batched DB telemetry ingest worker               | Prompt 8 |
+| `backend/app/api/`           | FastAPI REST endpoints (processes, resources, health)  | Prompt 8 |
