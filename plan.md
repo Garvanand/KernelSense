@@ -1,7 +1,7 @@
 # KernelSense — Implementation Plan
 
 > Master plan governing the full build sequence.
-> Last updated: 2026-07-05 · Prompt 1
+> Last updated: 2026-07-05 · Prompt 3
 
 ---
 
@@ -10,9 +10,9 @@
 | Prompt | Phase                          | Key Deliverables                                                                | Status  |
 | :----- | :----------------------------- | :------------------------------------------------------------------------------ | :------ |
 | **1**  | Feasibility & Planning         | `memory.md`, `plan.md`, `docs/FEASIBILITY.md`                                  | ✅ Done |
-| **2**  | Selection Lock & Justification | Final selection write-up, interview-ready justification document                | ⬜ Next |
-| **3**  | Schema & Data Layer            | Common telemetry schema, TimescaleDB schema, graph model, `docs/DATASETS.md`   | ⬜      |
-| **4**  | Instrumentation Layer          | psutil collectors, /proc readers, normalized output pipeline                    | ⬜      |
+| **2**  | Selection Lock & Justification | `docs/PROJECT_SELECTION.md` — interview-ready justification document            | ✅ Done |
+| **3**  | System Design & Architecture   | `SYSTEM_DESIGN.md`, `ARCHITECTURE.md`, `OS_ARCH.md`, ADRs 0001–0006            | ✅ Done |
+| **4**  | Repository Setup & Tooling     | Repo scaffold, CI skeleton, env config, dependency lockfiles                    | ⬜ Next |
 | **5**  | Storage & Streaming            | TimescaleDB integration, WebSocket streaming, Redis hot cache                   | ⬜      |
 | **6**  | AI Engine — Models             | Forecasting model (TS-transformer/LSTM), GNN, anomaly detector                 | ⬜      |
 | **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ⬜      |

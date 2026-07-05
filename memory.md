@@ -2,7 +2,9 @@
 
 > **"Your operating system, understood and foreseen."**
 >
-> Last updated: 2026-07-05 · Prompt 1 (Feasibility & Planning)
+> Last updated: 2026-07-05 · Prompt 3 (System Design)
+>
+> **Project selection finalized: 2026-07-05. Architecture locked: 2026-07-05.**
 
 ---
 
@@ -130,14 +132,21 @@
 | 2026-07-05 | psutil as universal baseline layer                      | Cross-platform, no privilege requirements for basic metrics, well-maintained |
 | 2026-07-05 | 4 public datasets identified for pretraining            | Cover cluster scheduling, kernel timing, and trace format familiarity |
 | 2026-07-05 | Three-tier access model (Guest/Power/Research)          | Progressive disclosure, server-enforced, explicit consent for elevation |
+| 2026-07-05 | **Project selection finalized — KernelSense locked**    | Scored 8.55/10 across 8 weighted criteria; feasibility confirmed; no risk warrants reconsideration |
+| 2026-07-05 | **Architecture locked — system design complete**         | 14 OS concepts mapped to 122 telemetry fields + 43 UI surfaces; 6 ADRs accepted; schema defined |
 
 ---
 
 ## 9. File Index
 
-| File                    | Purpose                                           | Created |
-| :---------------------- | :------------------------------------------------ | :------ |
-| `memory.md`             | Living project memory (this file)                 | Prompt 1 |
-| `plan.md`               | Implementation plan & prompt sequence              | Prompt 1 |
-| `docs/FEASIBILITY.md`   | Risk analysis, mitigations, MVP scope-down path    | Prompt 1 |
-| `docs/DATASETS.md`      | (Future) Full dataset provenance & license details | Prompt 3 |
+| File                         | Purpose                                              | Created  |
+| :--------------------------- | :--------------------------------------------------- | :------- |
+| `memory.md`                  | Living project memory (this file)                    | Prompt 1 |
+| `plan.md`                    | Implementation plan & prompt sequence                 | Prompt 1 |
+| `docs/FEASIBILITY.md`        | Risk analysis, mitigations, MVP scope-down path       | Prompt 1 |
+| `docs/PROJECT_SELECTION.md`  | Interview-ready project selection justification        | Prompt 2 |
+| `docs/SYSTEM_DESIGN.md`      | Detailed data flow, schemas, API contracts             | Prompt 3 |
+| `docs/ARCHITECTURE.md`       | High-level architecture, component diagrams            | Prompt 3 |
+| `docs/OPERATING_SYSTEM_ARCHITECTURE.md` | OS concept → telemetry → UI mapping      | Prompt 3 |
+| `docs/adr/0001–0006`         | Architecture Decision Records (6 total)                | Prompt 3 |
+| `docs/DATASETS.md`           | (Future) Full dataset provenance & license details     | Prompt 4+ |
