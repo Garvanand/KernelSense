@@ -1,4 +1,6 @@
-# KernelSense — Operating System Architecture Mapping
+# KernelSense — Operating System Interaction Architecture
+
+> **[Post-Implementation Note (v1.0)]**: KernelSense implements a fallback telemetry collector structure. If the OS strictly prohibits deep tracing (e.g., eBPF `bpf()` syscall blocks on Linux without `CAP_SYS_ADMIN`), the telemetry engine silently and safely falls back to standard `psutil` sampling for cross-platform stability. We strictly adhered to the Read-Only constraint (ADR-0001) in all collector logic.
 
 > `docs/OPERATING_SYSTEM_ARCHITECTURE.md` · v1.0 · 2026-07-05 · Prompt 3
 >

@@ -145,6 +145,8 @@
 | 2026-07-06 | **Scheduler Visualization Engine (Prompt 14)**          | Constructed 16-core CPU heatmap, optimized context-switch stream, and access-gated eBPF raw event logger. |
 | 2026-07-06 | **Prediction Engine UI (Prompt 15)**                    | Built asynchronous Incident Engine to escalate predictions, Bounded LLM explainer with caching, and unified System Health Dashboard. |
 | 2026-07-06 | **Performance Optimization (Prompt 16)**                | Implemented FastAPI ephemeral polling caches, Next.js dynamic code splitting, and formalized PERFORMANCE.md. |
+| 2026-07-06 | **End-to-End Testing (Prompt 17)**                      | Wrote Pytest suites for Access Policy and Incident Engine. Added Playwright specs for Dashboard traversal. Documented CI boundaries. |
+| 2026-07-06 | **Full Documentation Pass (Prompt 18)**                 | Completely overhauled docs. Added TALKING_POINTS.md detailing hardest engineering problems. Reconciled architectural drift. |
 
 ---
 

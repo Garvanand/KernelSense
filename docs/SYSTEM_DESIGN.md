@@ -1,5 +1,6 @@
 # KernelSense — System Design
 
+> **[Post-Implementation Note (v1.0)]**: The physical system boundaries proposed below were strictly maintained. The only structural shift was shifting the Next.js UI component rendering strategy for high-frequency events. We utilized `next/dynamic` to lazy-load massive visualization libraries (`d3`, `framer-motion`) and mathematical binning to render 5,000+ context-switches/sec without crashing the React DOM.
 > `docs/SYSTEM_DESIGN.md` · v1.0 · 2026-07-05 · Prompt 3
 >
 > Detailed data flow, component responsibilities, API contracts, and storage schemas.

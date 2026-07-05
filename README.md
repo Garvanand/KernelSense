@@ -1,18 +1,15 @@
 # KernelSense
-=======
-<div align="center">
-  <h1>KernelSense</h1>
-  <p><strong>Your operating system, understood and foreseen.</strong></p>
-  <p>
-    An AI-augmented, real-time operating system observatory. Combining high-fidelity OS telemetry with predictive machine learning and an immersive glassmorphism UI.
-  </p>
-</div>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green)](https://fastapi.tiangolo.com/)
 
 KernelSense is a cross-platform operating system telemetry engine that combines low-overhead instrumentation with local machine learning inference. It provides real-time observability into kernel scheduling, memory allocation, and process genealogy, while automatically detecting anomalies like memory leaks and scheduler contention without requiring off-site data exfiltration.
+
+**Why not just use `htop` or Task Manager?**
+Standard monitors tell you what is happening *right now*. KernelSense tells you what is going to happen *next*. By feeding live OS telemetry through a localized PyTorch LSTM pipeline, it surfaces impending Out-Of-Memory (OOM) risks, builds Graph Neural Network (GNN) matrices of process IPC contention, and generates root-cause analysis via a strictly bounded LLM—all displayed through an immersive, access-gated Next.js dashboard.
+
+![System Dashboard Placeholder](./assets/dashboard.gif)
 
 ## Architecture
 
@@ -83,13 +80,13 @@ Backend behavior is controlled via environment variables (can be placed in a `.e
 
 ## Documentation
 
-For deep-dives into internal architecture and design constraints, refer to the project ADRs:
+For deep-dives into internal architecture and design constraints, refer to the project docs:
 
-- [ADR-0001: Read-Only Constraint](./docs/adr/0001-read-only-constraint.md)
-- [ADR-0002: Cross-Platform Strategy](./docs/adr/0002-telemetry-strategy-cross-platform.md)
-- [ADR-0003: AI Model Pipeline](./docs/adr/0003-ai-model-choices.md)
-- [ADR-0004: Bounded LLM Integration](./docs/adr/0004-llm-usage-boundary.md)
-- [ADR-0005: Access Level RBAC](./docs/adr/0005-access-level-model-no-auth.md)
+- **[Talking Points](./docs/TALKING_POINTS.md)**: The hardest engineering problems solved.
+- **[Installation Guide](./docs/INSTALLATION.md)**: Advanced per-OS installation (eBPF).
+- **[User Guide](./docs/USER_GUIDE.md)**: Detailed breakdown of the UI and clearance levels.
+- **[Developer Guide](./docs/DEVELOPER_GUIDE.md)**: How to contribute to the codebase.
+- **[Security & RBAC](./docs/SECURITY.md)**: The Zero-Trust enforcement model.
 
 ## License
 

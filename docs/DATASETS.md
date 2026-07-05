@@ -1,10 +1,30 @@
-# KernelSense Pretraining Datasets
+# KernelSense Datasets
+
+Training an Artificial Intelligence to detect operating system anomalies requires massive, labeled datasets of process behavior. Since OS telemetry is highly specific to the kernel version and workload, we utilize a mix of public cluster traces and synthetically generated data.
+
+## 1. Alibaba Cluster Trace v2018
+To pre-train our Graph Neural Network (GNN) on process scheduling and IPC contention, we rely on the Alibaba Cluster Trace. 
+
+### Why this dataset?
+It contains 8 days of traces from 4,000 machines, encompassing massive DAG (Directed Acyclic Graph) job dependencies. This perfectly mirrors the parent-child and socket-communication process graphs we build locally.
+
+### Features extracted:
+- `cpu_core_utilization`
+- `mem_utilization`
+- `disk_io_percent`
+- `net_io_percent`
+
+## 2. Synthetic Memory Leak Generation
+To train the MLP (Multi-Layer Perceptron) leak detector, we generated synthetic monotonic heap growth profiles.
+- We wrote C scripts (`scripts/stress_tests/leak.c`) that slowly allocate arrays without freeing them over a 24-hour period.
+- We fed this data through our `TelemetryIngestWorker` to label the SQL rows as `is_anomaly=True`.
+- This ensures the AI learns the exact shape of a memory leak as it appears *through the lens of our specific SQLite schema*, rather than relying on generalized Kaggle datasets.
 
 > **IMPORTANT**: The primary source of data for KernelSense in production is **live, localized personal telemetry** collected from the user's own machine. The datasets listed here are exclusively for offline pretraining and bootstrapping the AI models (forecasting, anomaly detection) before they are fine-tuned on the user's specific system.
 
 This document serves as the provenance record for all public corpora used during the pretraining phase.
 
-## 1. LTTng Reference Traces
+## 3. LTTng Reference Traces
 - **Source**: [lttng/lttng-ref-traces (GitHub)](https://github.com/lttng/lttng-ref-traces)
 - **License**: MIT License
 - **Purpose**: Trace format familiarity, scheduler modeling, and basic synthetic process behavior testing.

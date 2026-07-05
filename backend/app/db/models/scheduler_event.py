@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, BigInteger
+from sqlalchemy import Column, String, Float, BigInteger, Integer
 from backend.app.db.models.base import Base
 
 class SchedulerEvent(Base):

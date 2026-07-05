@@ -2,6 +2,8 @@
 
 > `docs/ARCHITECTURE.md` · v1.0 · 2026-07-05 · Prompt 3
 >
+> **[Post-Implementation Note (v1.0)]**: KernelSense successfully adhered to the decoupled worker design proposed below. The primary deviation during implementation was the complete isolation of the `IncidentEngineWorker` into a separate `asyncio` task from the `TelemetryIngestWorker`, ensuring that PyTorch/LLM inference never blocks the 1Hz OS sampling loop. The Zero-Trust Access Model was implemented entirely client-side via headers (`X-Access-Level`) rather than relying on a heavy auth server.
+>
 > High-level architecture, component interaction model, and technology rationale.
 > For detailed schemas and API contracts, see [SYSTEM_DESIGN.md](file:///c:/Users/GARV%20ANAND/Downloads/KernelSense/docs/SYSTEM_DESIGN.md).
 > For ADRs, see [docs/adr/](file:///c:/Users/GARV%20ANAND/Downloads/KernelSense/docs/adr/).
