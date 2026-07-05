@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="./frontend/public/favicon.ico" alt="KernelSense Logo" width="100" />
   <h1>KernelSense</h1>
   <p><strong>Your operating system, understood and foreseen.</strong></p>
   <p>
