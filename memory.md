@@ -2,7 +2,7 @@
 
 > **"Your operating system, understood and foreseen."**
 >
-> Last updated: 2026-07-05 · Prompt 6 (Dataset Discovery)
+> Last updated: 2026-07-05 · Prompt 7 (Runtime Instrumentation Layer)
 >
 > **Project selection finalized: 2026-07-05. Architecture locked: 2026-07-05.**
 
@@ -135,6 +135,7 @@
 | 2026-07-05 | **Project selection finalized — KernelSense locked**    | Scored 8.55/10 across 8 weighted criteria; feasibility confirmed; no risk warrants reconsideration |
 | 2026-07-05 | **Architecture locked — system design complete**         | 14 OS concepts mapped to 122 telemetry fields + 43 UI surfaces; 6 ADRs accepted; schema defined |
 | 2026-07-05 | **Dataset Sources Locked (Prompt 6)**                   | LTTng downloaded; Zenodo returned 403 and was logged in KNOWN_LIMITATIONS.md instead of faking data |
+| 2026-07-05 | **Instrumentation Layer Implemented (Prompt 7)**        | Unified schema, psutil baseline (all), eBPF with fallback (Linux), ETW/SIP stubs (Win/Mac). Win benchmark fails CPU budget due to psutil API constraints. |
 
 ---
 
@@ -156,3 +157,7 @@
 | `docs/DATASETS.md`           | Full dataset provenance & license details              | Prompt 6 |
 | `scripts/download_pretraining_datasets.py` | Python script to fetch public corpora         | Prompt 6 |
 | `KNOWN_LIMITATIONS.md`       | Log of inaccessible datasets (e.g. Zenodo 403)         | Prompt 6 |
+| `backend/app/instrumentation/` | Live telemetry collectors, schema, sampler, consent    | Prompt 7 |
+| `backend/app/tests/test_instrumentation.py` | Unit tests for cross-platform schema logic   | Prompt 7 |
+| `backend/app/tests/live_benchmark.py` | CPU overhead measurement script                   | Prompt 7 |
+| `PERFORMANCE.md`             | Live benchmark results (CPU overhead budget)           | Prompt 7 |

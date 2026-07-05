@@ -1,7 +1,7 @@
 # KernelSense — Implementation Plan
 
 > Master plan governing the full build sequence.
-> Last updated: 2026-07-05 · Prompt 6
+> Last updated: 2026-07-05 · Prompt 7
 
 ---
 
@@ -15,8 +15,8 @@
 | **4**  | Repository Setup & Tooling     | Repo scaffold, CI skeleton, env config, dependency lockfiles                    | ✅ Done |
 | **5**  | Architecture Scaffolding       | Folder structure for backend, frontend, scripts, and docs                       | ✅ Done |
 | **6**  | AI Engine — Models             | Dataset discovery, Forecasting model (TS-transformer/LSTM)                     | ✅ Done |
-| **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ⬜ Next |
-| **8**  | LLM Explainer & API            | Bounded LLM explainer, FastAPI endpoints, access-level enforcement              | ⬜      |
+| **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ✅ Done |
+| **8**  | LLM Explainer & API            | Bounded LLM explainer, FastAPI endpoints, access-level enforcement              | ⬜ Next |
 | **9**  | Frontend — Core                | Next.js scaffold, layout, kernel-ring visual language, mode selector            | ⬜      |
 | **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ⬜      |
 | **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ⬜      |
