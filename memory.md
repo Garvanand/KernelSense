@@ -2,7 +2,7 @@
 
 > **"Your operating system, understood and foreseen."**
 >
-> Last updated: 2026-07-05 · Prompt 3 (System Design)
+> Last updated: 2026-07-05 · Prompt 6 (Dataset Discovery)
 >
 > **Project selection finalized: 2026-07-05. Architecture locked: 2026-07-05.**
 
@@ -134,6 +134,7 @@
 | 2026-07-05 | Three-tier access model (Guest/Power/Research)          | Progressive disclosure, server-enforced, explicit consent for elevation |
 | 2026-07-05 | **Project selection finalized — KernelSense locked**    | Scored 8.55/10 across 8 weighted criteria; feasibility confirmed; no risk warrants reconsideration |
 | 2026-07-05 | **Architecture locked — system design complete**         | 14 OS concepts mapped to 122 telemetry fields + 43 UI surfaces; 6 ADRs accepted; schema defined |
+| 2026-07-05 | **Dataset Sources Locked (Prompt 6)**                   | LTTng downloaded; Zenodo returned 403 and was logged in KNOWN_LIMITATIONS.md instead of faking data |
 
 ---
 
@@ -149,4 +150,9 @@
 | `docs/ARCHITECTURE.md`       | High-level architecture, component diagrams            | Prompt 3 |
 | `docs/OPERATING_SYSTEM_ARCHITECTURE.md` | OS concept → telemetry → UI mapping      | Prompt 3 |
 | `docs/adr/0001–0006`         | Architecture Decision Records (6 total)                | Prompt 3 |
-| `docs/DATASETS.md`           | (Future) Full dataset provenance & license details     | Prompt 4+ |
+| `backend/pyproject.toml`     | Python backend configuration and linting rules          | Prompt 4 |
+| `frontend/package.json`      | Node.js frontend configuration and dependencies         | Prompt 4 |
+| `.github/workflows/ci.yml`   | CI pipeline skeleton (linting & testing)               | Prompt 4 |
+| `docs/DATASETS.md`           | Full dataset provenance & license details              | Prompt 6 |
+| `scripts/download_pretraining_datasets.py` | Python script to fetch public corpora         | Prompt 6 |
+| `KNOWN_LIMITATIONS.md`       | Log of inaccessible datasets (e.g. Zenodo 403)         | Prompt 6 |

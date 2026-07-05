@@ -1,7 +1,7 @@
 # KernelSense — Implementation Plan
 
 > Master plan governing the full build sequence.
-> Last updated: 2026-07-05 · Prompt 3
+> Last updated: 2026-07-05 · Prompt 6
 
 ---
 
@@ -12,10 +12,10 @@
 | **1**  | Feasibility & Planning         | `memory.md`, `plan.md`, `docs/FEASIBILITY.md`                                  | ✅ Done |
 | **2**  | Selection Lock & Justification | `docs/PROJECT_SELECTION.md` — interview-ready justification document            | ✅ Done |
 | **3**  | System Design & Architecture   | `SYSTEM_DESIGN.md`, `ARCHITECTURE.md`, `OS_ARCH.md`, ADRs 0001–0006            | ✅ Done |
-| **4**  | Repository Setup & Tooling     | Repo scaffold, CI skeleton, env config, dependency lockfiles                    | ⬜ Next |
-| **5**  | Storage & Streaming            | TimescaleDB integration, WebSocket streaming, Redis hot cache                   | ⬜      |
-| **6**  | AI Engine — Models             | Forecasting model (TS-transformer/LSTM), GNN, anomaly detector                 | ⬜      |
-| **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ⬜      |
+| **4**  | Repository Setup & Tooling     | Repo scaffold, CI skeleton, env config, dependency lockfiles                    | ✅ Done |
+| **5**  | Architecture Scaffolding       | Folder structure for backend, frontend, scripts, and docs                       | ✅ Done |
+| **6**  | AI Engine — Models             | Dataset discovery, Forecasting model (TS-transformer/LSTM)                     | ✅ Done |
+| **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ⬜ Next |
 | **8**  | LLM Explainer & API            | Bounded LLM explainer, FastAPI endpoints, access-level enforcement              | ⬜      |
 | **9**  | Frontend — Core                | Next.js scaffold, layout, kernel-ring visual language, mode selector            | ⬜      |
 | **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ⬜      |

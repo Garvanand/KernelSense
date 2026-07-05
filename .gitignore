@@ -1,0 +1,43 @@
+# Node
+node_modules/
+.npm/
+package-lock.json
+
+# Next.js
+.next/
+out/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+.ruff_cache/
+.mypy_cache/
+env/
+venv/
+.env
+.venv/
+env.bak/
+venv.bak/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Data / Fixtures
+backend/tests/fixtures/pretraining/lttng/
+backend/tests/fixtures/pretraining/*.zip
+backend/tests/fixtures/pretraining/zenodo_kernel_dataset/
