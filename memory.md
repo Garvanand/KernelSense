@@ -147,6 +147,7 @@
 | 2026-07-06 | **Performance Optimization (Prompt 16)**                | Implemented FastAPI ephemeral polling caches, Next.js dynamic code splitting, and formalized PERFORMANCE.md. |
 | 2026-07-06 | **End-to-End Testing (Prompt 17)**                      | Wrote Pytest suites for Access Policy and Incident Engine. Added Playwright specs for Dashboard traversal. Documented CI boundaries. |
 | 2026-07-06 | **Full Documentation Pass (Prompt 18)**                 | Completely overhauled docs. Added TALKING_POINTS.md detailing hardest engineering problems. Reconciled architectural drift. |
+| 2026-07-06 | **Final Polishing (Prompt 19)**                         | Added first-run Onboarding Modal and client-side Historical Replay (Demo Mode) for cold presentations. |
 
 ---
 

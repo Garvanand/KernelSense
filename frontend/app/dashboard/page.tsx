@@ -9,13 +9,17 @@ import { ArrowLeft, Activity } from 'lucide-react';
 import Link from 'next/link';
 
 import { IncidentFeed, Incident } from '@/components/dashboard/incident-feed';
+import { DEMO_INCIDENTS } from '@/lib/demo-data';
 
 const fetcher = (url: string) => apiClient.get<Incident[]>(url);
 
 export default function DashboardPage() {
-  const { level } = useAccessLevel();
+  const { level, demoMode, setDemoMode } = useAccessLevel();
   // Poll every 3 seconds for incident engine evaluation
-  const { data: incidents, error, isLoading } = useSWR('/incidents', fetcher, { refreshInterval: 3000 });
+  const { data: rawIncidents, error, isLoading } = useSWR(demoMode ? null : '/incidents', fetcher, { refreshInterval: 3000 });
+
+  // Intercept data if demo mode is active
+  const incidents = demoMode ? DEMO_INCIDENTS : rawIncidents;
 
   return (
     <div className="w-full h-screen flex flex-col bg-background relative overflow-y-auto">
@@ -38,6 +42,13 @@ export default function DashboardPage() {
           >
             {level}
           </Badge>
+          
+          <button 
+            onClick={() => setDemoMode(!demoMode)}
+            className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold transition-colors ${demoMode ? 'bg-purple-600/20 text-purple-400 border border-purple-500/50' : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'}`}
+          >
+            {demoMode ? 'DEMO ACTIVE' : 'DEMO OFF'}
+          </button>
         </div>
       </header>
 
@@ -57,7 +68,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {isLoading && !incidents && (
+        {isLoading && !incidents && !demoMode && (
           <div className="text-slate-400 animate-pulse">Querying AI Engine...</div>
         )}
 
