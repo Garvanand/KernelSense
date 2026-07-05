@@ -138,6 +138,7 @@
 | 2026-07-05 | **Instrumentation Layer Implemented (Prompt 7)**        | Unified schema, psutil baseline (all), eBPF with fallback (Linux), ETW/SIP stubs (Win/Mac). Win benchmark fails CPU budget due to psutil API constraints. |
 | 2026-07-05 | **FastAPI Backend Foundation (Prompt 8)**               | DB models, async telemetry ingest worker, and core REST API endpoints built. Soak test passed with 14MB startup allocation (no continuous leak). |
 | 2026-07-05 | **OS Interaction Layer (Prompt 9)**                     | Implemented deeper OS collectors (sockets, files, services, permissions) and access-level gating (`Guest`, `Power`, `Research`). |
+| 2026-07-05 | **AI Engine Pipeline (Prompt 10)**                      | Added PyTorch models for LSTM forecasting, GNN contention prediction, and MLP leak detection. Evaluated against stat baselines. |
 
 ---
 
@@ -168,3 +169,8 @@
 | `backend/app/api/`           | FastAPI REST endpoints (processes, resources, health)  | Prompt 8,9 |
 | `backend/app/access/`        | Access tier definitions, in-memory state, and payload filters | Prompt 9 |
 | `backend/app/tests/test_access_policy.py` | Unit tests for access tier filtering and API logic | Prompt 9 |
+| `backend/app/ml/features/`   | Resource sliding window and Graph Adjacency feature extractors | Prompt 10 |
+| `backend/app/ml/forecasting/`| LSTM system saturation model and SMA baseline          | Prompt 10 |
+| `backend/app/ml/gnn/`        | GCN model for process contention and Centrality baseline| Prompt 10 |
+| `backend/app/ml/anomaly/`    | MLP residual leak detector and Z-Score baseline        | Prompt 10 |
+| `docs/AI_PIPELINE.md`        | Evaluation metrics for AI pipeline on telemetry DB     | Prompt 10 |

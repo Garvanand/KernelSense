@@ -14,6 +14,7 @@ from backend.app.db.models.process_snapshot import ProcessSnapshot
 from backend.app.db.models.resource_metric import ResourceMetric
 from backend.app.db.models.scheduler_event import SchedulerEvent
 from backend.app.db.models.consent_log import ConsentLog
+from backend.app.db.models.prediction import Prediction
 
 from backend.app.instrumentation.sampler import TelemetrySampler
 from backend.app.workers.telemetry_ingest_worker import TelemetryIngestWorker

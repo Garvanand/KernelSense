@@ -1,7 +1,7 @@
 # KernelSense — Implementation Plan
 
 > Master plan governing the full build sequence.
-> Last updated: 2026-07-05 · Prompt 9
+> Last updated: 2026-07-05 · Prompt 10
 
 ---
 
@@ -18,8 +18,8 @@
 | **7**  | Platform Telemetry Validation  | Verify eBPF/ETW/dtrace assumptions, build platform-specific collectors          | ✅ Done |
 | **8**  | LLM Explainer & API            | Bounded LLM explainer, FastAPI endpoints, access-level enforcement              | ✅ Done |
 | **9**  | Frontend — Core                | Next.js scaffold, layout, kernel-ring visual language, mode selector            | ✅ Done |
-| **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ⬜ Next |
-| **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ⬜      |
+| **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ✅ Done |
+| **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ⬜ Next |
 | **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ⬜      |
 
 ---

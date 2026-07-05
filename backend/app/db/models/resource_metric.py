@@ -4,7 +4,7 @@ from backend.app.db.models.base import Base
 class ResourceMetric(Base):
     __tablename__ = "resource_metrics"
     
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True)
     timestamp = Column(Float, nullable=False, index=True)
     
     cpu_user_percent = Column(Float, nullable=False)

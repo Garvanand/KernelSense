@@ -4,7 +4,7 @@ from backend.app.db.models.base import Base
 class ProcessSnapshot(Base):
     __tablename__ = "process_snapshots"
     
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True)
     timestamp = Column(Float, nullable=False, index=True)
     
     pid = Column(Integer, nullable=False, index=True)
