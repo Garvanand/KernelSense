@@ -21,7 +21,8 @@
 | **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ✅ Done |
 | **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ✅ Done |
 | **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ✅ Done |
-| **13** | Process Details/Graphs         | Memory graph implementations                                                   | ⬜ Next |
+| **13** | Process Details/Graphs         | Memory graph implementations                                                   | ✅ Done |
+| **14** | Scheduler Engine               | CPU cores, context switches, run-queue visualizations                          | ⬜ Next |
 
 ---
 

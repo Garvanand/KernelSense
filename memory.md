@@ -141,6 +141,7 @@
 | 2026-07-05 | **AI Engine Pipeline (Prompt 10)**                      | Added PyTorch models for LSTM forecasting, GNN contention prediction, and MLP leak detection. Evaluated against stat baselines. |
 | 2026-07-05 | **Frontend Core Foundation (Prompt 11)**                | Setup Next.js App Router, Tailwind glassmorphism design system, typed API client with `X-Access-Level` interception, and access-level selector. |
 | 2026-07-06 | **Process Visualization Engine (Prompt 12)**            | Built React Flow dagre-layout process tree, SWR polling diff engine for animations, and access-level gated detail panel. |
+| 2026-07-06 | **Memory Visualization Engine (Prompt 13)**             | Created system memory block pressure animation and D3.js leak charts overlaying AI predictions with LLM diagnostic cards. |
 
 ---
 
@@ -183,3 +184,6 @@
 | `frontend/app/processes/page.tsx`| Process tree main visualization wrapper page           | Prompt 12 |
 | `frontend/components/process-tree/`| React Flow node logic and dagre layout orchestrator | Prompt 12 |
 | `frontend/components/process-detail/`| Detailed process panel rendering deep OS properties | Prompt 12 |
+| `backend/app/api/memory.py`  | Aggregates system memory telemetry and leak predictions| Prompt 13 |
+| `frontend/components/memory-map/` | System memory block pressure framer-motion visuals     | Prompt 13 |
+| `frontend/components/leak-timeline/` | D3.js historical memory charts with prediction overlays| Prompt 13 |
