@@ -1,4 +1,12 @@
 # KernelSense
+=======
+<div align="center">
+  <h1>KernelSense</h1>
+  <p><strong>Your operating system, understood and foreseen.</strong></p>
+  <p>
+    An AI-augmented, real-time operating system observatory. Combining high-fidelity OS telemetry with predictive machine learning and an immersive glassmorphism UI.
+  </p>
+</div>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
