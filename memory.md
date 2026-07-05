@@ -139,6 +139,7 @@
 | 2026-07-05 | **FastAPI Backend Foundation (Prompt 8)**               | DB models, async telemetry ingest worker, and core REST API endpoints built. Soak test passed with 14MB startup allocation (no continuous leak). |
 | 2026-07-05 | **OS Interaction Layer (Prompt 9)**                     | Implemented deeper OS collectors (sockets, files, services, permissions) and access-level gating (`Guest`, `Power`, `Research`). |
 | 2026-07-05 | **AI Engine Pipeline (Prompt 10)**                      | Added PyTorch models for LSTM forecasting, GNN contention prediction, and MLP leak detection. Evaluated against stat baselines. |
+| 2026-07-05 | **Frontend Core Foundation (Prompt 11)**                | Setup Next.js App Router, Tailwind glassmorphism design system, typed API client with `X-Access-Level` interception, and access-level selector. |
 
 ---
 
@@ -174,3 +175,7 @@
 | `backend/app/ml/gnn/`        | GCN model for process contention and Centrality baseline| Prompt 10 |
 | `backend/app/ml/anomaly/`    | MLP residual leak detector and Z-Score baseline        | Prompt 10 |
 | `docs/AI_PIPELINE.md`        | Evaluation metrics for AI pipeline on telemetry DB     | Prompt 10 |
+| `frontend/DESIGN_SYSTEM.md`  | Documentation of Kernel Ring color hierarchy and glass tokens | Prompt 11 |
+| `frontend/lib/api-client.ts` | Typed fetch client attaching `X-Access-Level` headers  | Prompt 11 |
+| `frontend/app/(landing)/page.tsx` | The visual access-level selector (Auth replacement) | Prompt 11 |
+| `frontend/components/ui/`    | Custom Tailwind glassmorphic UI primitives             | Prompt 11 |

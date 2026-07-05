@@ -1,7 +1,7 @@
 # KernelSense — Implementation Plan
 
 > Master plan governing the full build sequence.
-> Last updated: 2026-07-05 · Prompt 10
+> Last updated: 2026-07-05 · Prompt 11
 
 ---
 
@@ -19,8 +19,8 @@
 | **8**  | LLM Explainer & API            | Bounded LLM explainer, FastAPI endpoints, access-level enforcement              | ✅ Done |
 | **9**  | Frontend — Core                | Next.js scaffold, layout, kernel-ring visual language, mode selector            | ✅ Done |
 | **10** | Frontend — Visualizations      | D3.js/React Flow telemetry visualizations, animated context-switch visuals      | ✅ Done |
-| **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ⬜ Next |
-| **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ⬜      |
+| **11** | Integration & Polish           | End-to-end integration, error handling, edge cases, performance tuning          | ✅ Done |
+| **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ⬜ Next |
 
 ---
 
