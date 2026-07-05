@@ -1,8 +1,13 @@
 import psutil
 import time
 import platform
-from backend.app.instrumentation.common.schema import ProcessContext, SystemMetrics, PlatformInfo, TelemetryPayload
+from backend.app.instrumentation.common.schema import ProcessContext, SystemMetrics, TelemetryPayload, PlatformInfo
 from backend.app.instrumentation.common.base import BaseCollector
+from backend.app.instrumentation.consent import consent_manager
+from backend.app.instrumentation.common.open_files import collect_open_files
+from backend.app.instrumentation.common.sockets import collect_sockets
+from backend.app.instrumentation.common.permissions import collect_permissions
+from backend.app.instrumentation.common.services import collect_services
 
 class LinuxPsutilCollector(BaseCollector):
     def __init__(self):
@@ -41,46 +46,44 @@ class LinuxPsutilCollector(BaseCollector):
         )
         
         processes = []
-        for proc in psutil.process_iter(['pid', 'ppid', 'name', 'status', 'create_time', 'cpu_percent', 'memory_info', 'num_threads']):
+        for p in psutil.process_iter(['pid', 'ppid', 'name', 'status', 'create_time', 'cpu_percent', 'memory_info', 'num_threads']):
             try:
-                info = proc.info
-                mem_info = info.get('memory_info')
-                
-                io_read, io_write = None, None
+                mem_cpu = p.info
+                io_counters = None
                 try:
-                    io_counters = proc.io_counters()
-                    io_read = io_counters.read_bytes
-                    io_write = io_counters.write_bytes
+                    io_counters = p.io_counters()
                 except (psutil.AccessDenied, psutil.ZombieProcess, AttributeError):
                     pass
                 
-                num_fds = None
-                try:
-                    num_fds = proc.num_fds()
-                except (psutil.AccessDenied, psutil.ZombieProcess, AttributeError, NotImplementedError):
-                    pass
+                # Deep Interaction Fields (only if consent granted, otherwise skip to save overhead)
+                open_files_data = None
+                sockets_data = None
+                permissions_data = None
+                
+                if consent_manager.is_granted():
+                    open_files_data = collect_open_files(p)
+                    sockets_data = collect_sockets(p)
+                    permissions_data = collect_permissions(p)
                     
-                cpu_affinity = None
-                try:
-                    cpu_affinity = proc.cpu_affinity()
-                except (psutil.AccessDenied, psutil.ZombieProcess, AttributeError, NotImplementedError):
-                    pass
-
-                processes.append(ProcessContext(
-                    pid=info['pid'],
-                    ppid=info.get('ppid'),
-                    name=info.get('name') or "",
-                    status=info.get('status') or "",
-                    create_time=info.get('create_time') or 0.0,
-                    cpu_percent=info.get('cpu_percent') or 0.0,
-                    mem_rss_bytes=mem_info.rss if mem_info else 0,
-                    mem_vms_bytes=mem_info.vms if mem_info else 0,
-                    num_threads=info.get('num_threads') or 0,
-                    io_read_bytes=io_read,
-                    io_write_bytes=io_write,
-                    num_fds=num_fds,
-                    cpu_affinity=cpu_affinity
-                ))
+                ctx = ProcessContext(
+                    pid=p.pid,
+                    ppid=p.ppid(),
+                    name=p.name(),
+                    status=p.status(),
+                    create_time=p.create_time(),
+                    cpu_percent=mem_cpu.get('cpu_percent', 0.0),
+                    mem_rss_bytes=mem_cpu.get('memory_info', getattr(p, 'memory_info', lambda: None)()).rss,
+                    mem_vms_bytes=mem_cpu.get('memory_info', getattr(p, 'memory_info', lambda: None)()).vms,
+                    num_threads=p.num_threads(),
+                    io_read_bytes=io_counters.read_bytes if io_counters else None,
+                    io_write_bytes=io_counters.write_bytes if io_counters else None,
+                    num_fds=p.num_fds() if hasattr(p, 'num_fds') else None,
+                    cpu_affinity=p.cpu_affinity() if hasattr(p, 'cpu_affinity') else None,
+                    open_files=open_files_data,
+                    sockets=sockets_data,
+                    permissions=permissions_data
+                )
+                processes.append(ctx)
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
                 
@@ -92,11 +95,15 @@ class LinuxPsutilCollector(BaseCollector):
             etw_active=False
         )
         
+        # Collect services (only if elevated)
+        services_data = collect_services() if consent_manager.is_granted() else None
+
         return TelemetryPayload(
             timestamp=ts,
             platform_info=platform_info,
             system_metrics=sys_metrics,
-            processes=processes
+            processes=processes,
+            services=services_data
         )
         
     def cleanup(self) -> None:

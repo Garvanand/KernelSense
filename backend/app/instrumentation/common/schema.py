@@ -1,6 +1,28 @@
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 
+class OpenFile(BaseModel):
+    path: str
+    fd: Optional[int] = None
+
+class SocketConnection(BaseModel):
+    fd: Optional[int] = None
+    family: int
+    type: int
+    laddr: str
+    raddr: Optional[str] = None
+    status: str
+
+class ProcessPermissions(BaseModel):
+    username: Optional[str] = None
+    uids: Optional[List[int]] = None
+    gids: Optional[List[int]] = None
+
+class Service(BaseModel):
+    name: str
+    display_name: str
+    status: str
+
 class ProcessContext(BaseModel):
     """Normalized process-level telemetry."""
     pid: int
@@ -22,6 +44,11 @@ class ProcessContext(BaseModel):
     # Platform specific process extensions
     num_fds: Optional[int] = None          # Linux/macOS
     cpu_affinity: Optional[List[int]] = None # Linux/Windows
+    
+    # Deep OS Interaction fields
+    open_files: Optional[List[OpenFile]] = None
+    sockets: Optional[List[SocketConnection]] = None
+    permissions: Optional[ProcessPermissions] = None
 
 class SystemMetrics(BaseModel):
     """Normalized system-wide telemetry."""
@@ -71,3 +98,4 @@ class TelemetryPayload(BaseModel):
     platform_info: PlatformInfo
     system_metrics: SystemMetrics
     processes: List[ProcessContext] = Field(default_factory=list)
+    services: Optional[List[Service]] = None

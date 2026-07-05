@@ -110,7 +110,10 @@ class TelemetryIngestWorker:
                                 mem_vms_bytes=p.mem_vms_bytes,
                                 num_threads=p.num_threads,
                                 io_read_bytes=p.io_read_bytes,
-                                io_write_bytes=p.io_write_bytes
+                                io_write_bytes=p.io_write_bytes,
+                                open_files=[f.model_dump() for f in p.open_files] if p.open_files else None,
+                                sockets=[s.model_dump() for s in p.sockets] if p.sockets else None,
+                                permissions=p.permissions.model_dump() if p.permissions else None
                             )
                             session.add(ps)
                             

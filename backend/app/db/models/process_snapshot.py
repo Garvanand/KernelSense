@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, BigInteger
+from sqlalchemy import Column, Integer, String, Float, BigInteger, JSON
 from backend.app.db.models.base import Base
 
 class ProcessSnapshot(Base):
@@ -20,3 +20,8 @@ class ProcessSnapshot(Base):
     
     io_read_bytes = Column(BigInteger, nullable=True)
     io_write_bytes = Column(BigInteger, nullable=True)
+    
+    # Deep OS fields stored as JSON
+    open_files = Column(JSON, nullable=True)
+    sockets = Column(JSON, nullable=True)
+    permissions = Column(JSON, nullable=True)
