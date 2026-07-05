@@ -1,5 +1,4 @@
-# KernelSense
-=======
+
 <div align="center">
   <h1>KernelSense</h1>
   <p><strong>Your operating system, understood and foreseen.</strong></p>
