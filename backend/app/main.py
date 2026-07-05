@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.core.config import settings
 from backend.app.core.logging import setup_logging
-from backend.app.api import processes, resources, health, access, memory, scheduler
+from backend.app.api import processes, resources, health, access, memory, scheduler, incidents
 
 from backend.app.db.database import engine
 from backend.app.db.models.base import Base
@@ -18,12 +18,14 @@ from backend.app.db.models.prediction import Prediction
 
 from backend.app.instrumentation.sampler import TelemetrySampler
 from backend.app.workers.telemetry_ingest_worker import TelemetryIngestWorker
+from backend.app.ml.incident_engine import IncidentEngineWorker
 
 # Setup structured logging
 setup_logging()
 
-# Global worker reference
+# Global worker references
 ingest_worker = None
+incident_worker = None
 
 def get_collector():
     sys_os = platform.system().lower()
@@ -44,19 +46,24 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
         
     # Start background ingest worker
-    global ingest_worker
-    collector = get_collector()
-    sampler = TelemetrySampler(collector=collector, interval_sec=settings.SAMPLING_INTERVAL_SEC)
-    ingest_worker = TelemetryIngestWorker(sampler=sampler, batch_size=settings.INGEST_BATCH_SIZE)
+    global ingest_worker, incident_worker
     
-    # Run the start method
+    # 1. Start Telemetry Ingestion
+    collector = get_collector()
+    sampler = TelemetrySampler(collector, interval_sec=1.0) # 1 Hz
+    ingest_worker = TelemetryIngestWorker(sampler)
     await ingest_worker.start()
+    
+    # 2. Start Incident Engine
+    incident_worker = IncidentEngineWorker()
+    await incident_worker.start()
     
     yield
     
-    # Shutdown
     if ingest_worker:
         await ingest_worker.stop()
+    if incident_worker:
+        await incident_worker.stop()
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
@@ -74,5 +81,6 @@ app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(access.router, prefix="/api/v1/access", tags=["access"])
 app.include_router(memory.router, prefix="/api/v1/memory", tags=["memory"])
 app.include_router(scheduler.router, prefix="/api/v1/scheduler", tags=["scheduler"])
+app.include_router(incidents.router, prefix="/api/v1/incidents", tags=["incidents"])
 app.include_router(processes.router, prefix=f"{settings.API_V1_STR}/processes", tags=["processes"])
 app.include_router(resources.router, prefix=f"{settings.API_V1_STR}/resources", tags=["resources"])

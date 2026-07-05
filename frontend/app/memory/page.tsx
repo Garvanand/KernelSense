@@ -3,8 +3,13 @@
 import React from 'react';
 import useSWR from 'swr';
 import { apiClient } from '@/lib/api-client';
-import { MemoryBlocks, MemoryComposition } from '@/components/memory-map/memory-blocks';
-import { LeakChart, MemoryAnomaly } from '@/components/leak-timeline/leak-chart';
+import dynamic from 'next/dynamic';
+
+const MemoryBlocks = dynamic(() => import('@/components/memory-map/memory-blocks').then(mod => mod.MemoryBlocks), { ssr: false });
+const LeakChart = dynamic(() => import('@/components/leak-timeline/leak-chart').then(mod => mod.LeakChart), { ssr: false });
+
+import type { MemoryComposition } from '@/components/memory-map/memory-blocks';
+import type { MemoryAnomaly } from '@/components/leak-timeline/leak-chart';
 import { useAccessLevel } from '@/lib/store/access-level';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';

@@ -8,10 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-import { CoreHeatmap, CoreUtilization } from '@/components/core-heatmap/core-heatmap';
-import { ContextSwitchStream } from '@/components/context-switch-stream/context-switch-stream';
-import { RunQueue } from '@/components/run-queue/run-queue';
-import { RawEventsStream } from '@/components/scheduler/raw-events';
+import dynamic from 'next/dynamic';
+
+const CoreHeatmap = dynamic(() => import('@/components/core-heatmap/core-heatmap').then(mod => mod.CoreHeatmap), { ssr: false });
+const ContextSwitchStream = dynamic(() => import('@/components/context-switch-stream/context-switch-stream').then(mod => mod.ContextSwitchStream), { ssr: false });
+const RunQueue = dynamic(() => import('@/components/run-queue/run-queue').then(mod => mod.RunQueue), { ssr: false });
+const RawEventsStream = dynamic(() => import('@/components/scheduler/raw-events').then(mod => mod.RawEventsStream), { ssr: false });
+
+// CoreUtilization is a type, so we can't dynamic import it. We'll import it normally using type import.
+import type { CoreUtilization } from '@/components/core-heatmap/core-heatmap';
 
 interface SchedulerResponse {
   timestamp: number;

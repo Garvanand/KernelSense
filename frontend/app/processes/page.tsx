@@ -1,8 +1,11 @@
 "use client"
 
 import React, { useState } from 'react';
-import { ProcessTree } from '@/components/process-tree/process-tree';
-import { ProcessDetail } from '@/components/process-detail/process-detail';
+import dynamic from 'next/dynamic';
+
+const ProcessTree = dynamic(() => import('@/components/process-tree/process-tree').then(mod => mod.ProcessTree), { ssr: false });
+const ProcessDetail = dynamic(() => import('@/components/process-detail/process-detail').then(mod => mod.ProcessDetail), { ssr: false });
+
 import { ProcessNodeData } from '@/components/process-tree/process-node';
 import { useAccessLevel } from '@/lib/store/access-level';
 import { Badge } from '@/components/ui/badge';

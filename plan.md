@@ -23,7 +23,8 @@
 | **12** | Documentation & Launch         | README, setup guide, architecture docs, demo recording                         | ✅ Done |
 | **13** | Process Details/Graphs         | Memory graph implementations                                                   | ✅ Done |
 | **14** | Scheduler Engine               | CPU cores, context switches, run-queue visualizations                          | ✅ Done |
-| **15** | Prediction Engine UI           | LLM bounded root-cause explanation engine integrated in UI                     | ⬜ Next |
+| **15** | Prediction Engine UI           | LLM bounded root-cause explanation engine integrated in UI                     | ✅ Done |
+| **16** | Performance & Polish           | End-to-end performance optimization pass                                       | ⬜ Next |
 
 ---
 

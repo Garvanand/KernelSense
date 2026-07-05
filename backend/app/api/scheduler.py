@@ -9,7 +9,14 @@ from backend.app.access.state import AccessState
 from pydantic import BaseModel
 from typing import List, Optional
 
+import time
+
 router = APIRouter()
+
+_cache = {
+    "last_update": 0,
+    "data": None
+}
 
 class CoreUtilization(BaseModel):
     core_id: int
@@ -30,6 +37,11 @@ class RawEventResponse(BaseModel):
 @router.get("/", response_model=SchedulerMetricsResponse)
 async def get_scheduler_metrics(db: AsyncSession = Depends(get_db)):
     """Get aggregated scheduler metrics and per-core utilization."""
+    
+    now = time.time()
+    if _cache["data"] and (now - _cache["last_update"]) < 1.0:
+        return _cache["data"]
+        
     repo = TelemetryRepository(db)
     
     # 1. Fetch latest system CPU composition
@@ -66,12 +78,17 @@ async def get_scheduler_metrics(db: AsyncSession = Depends(get_db)):
     # Simulate run-queue latency based on CPU pressure
     rq_latency = base_cpu * 0.15 + random.uniform(0.1, 1.2)
     
-    return SchedulerMetricsResponse(
+    resp = SchedulerMetricsResponse(
         timestamp=resources[0].timestamp if resources else 0.0,
         cores=cores,
         context_switch_rate=cs_rate,
         run_queue_latency_ms=round(rq_latency, 2)
     )
+    
+    _cache["last_update"] = now
+    _cache["data"] = resp
+    
+    return resp
 
 @router.get("/events", response_model=List[RawEventResponse])
 async def get_raw_events(limit: int = 50, db: AsyncSession = Depends(get_db)):

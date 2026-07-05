@@ -29,6 +29,11 @@ class MemoryResponse(BaseModel):
 @router.get("/", response_model=MemoryResponse)
 async def get_memory_intelligence(db: AsyncSession = Depends(get_db)):
     """Get system memory composition and current leak anomalies."""
+    
+    now = time.time()
+    if _cache["data"] and (now - _cache["last_update"]) < 1.0:
+        return _cache["data"]
+
     repo = TelemetryRepository(db)
     
     # 1. Fetch latest system memory composition
