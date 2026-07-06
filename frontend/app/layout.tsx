@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KernelSense | Next-Gen Telemetry",
-  description: "Deep observability across platforms.",
+  title: "KernelSense — Operating System Intelligence",
+  description: "See inside your machine. Real-time process genealogy, memory landscape, and AI-powered anomaly detection.",
 };
-
-import { Toaster } from "@/components/ui/toast";
-import { OnboardingModal } from "@/components/ui/onboarding-modal";
 
 export default function RootLayout({
   children,
@@ -16,10 +13,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased text-foreground bg-background">
-        {children}
-        <Toaster />
-        <OnboardingModal />
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-sans">
+        <div className="void-gradient noise fixed inset-0 z-0" />
+        <div className="relative z-10 h-screen w-screen overflow-hidden">
+          {children}
+        </div>
       </body>
     </html>
   );

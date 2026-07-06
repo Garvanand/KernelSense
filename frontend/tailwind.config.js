@@ -7,29 +7,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        // Kernel Ring colors
-        ring0: { // Red (Kernel/Admin)
-          DEFAULT: "var(--ring-0)",
-          glow: "var(--ring-0-glow)",
-        },
-        ring1: { // Orange (Drivers/System)
-          DEFAULT: "var(--ring-1)",
-          glow: "var(--ring-1-glow)",
-        },
-        ring2: { // Cyan (Power User)
-          DEFAULT: "var(--ring-2)",
-          glow: "var(--ring-2-glow)",
-        },
-        ring3: { // Blue (User/Guest)
-          DEFAULT: "var(--ring-3)",
-          glow: "var(--ring-3-glow)",
-        },
-        research: { // Purple (Research Mode)
-          DEFAULT: "var(--ring-research)",
-          glow: "var(--ring-research-glow)",
-        },
+        void: "var(--void)",
+        "depth-1": "var(--depth-1)",
+        "depth-2": "var(--depth-2)",
+        "depth-3": "var(--depth-3)",
+        // Subsystem semantic colors
+        process: "var(--color-process)",
+        memory: "var(--color-memory)",
+        scheduler: "var(--color-scheduler)",
+        network: "var(--color-network)",
+        filesystem: "var(--color-filesystem)",
+        ai: "var(--color-ai)",
+        kernel: "var(--color-kernel)",
+        // Severity
+        normal: "var(--severity-normal)",
+        elevated: "var(--severity-elevated)",
+        warning: "var(--severity-warning)",
+        critical: "var(--severity-critical)",
+        prediction: "var(--severity-prediction)",
+        // Surface
         surface: {
           DEFAULT: "var(--surface)",
           hover: "var(--surface-hover)",
@@ -38,28 +34,58 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-        mono: ["var(--font-fira-code)", "monospace"],
+        sans: ["'Inter'", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "'Fira Code'", "monospace"],
+      },
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "0.875rem" }],
       },
       animation: {
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "glow-pulse": "glow-pulse 3s ease-in-out infinite alternate",
-        "slide-up": "slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-        "fade-in": "fade-in 0.3s ease-out",
+        "fade-in": "fade-in 0.5s var(--ease-out-expo)",
+        "slide-up": "slide-up 0.5s var(--ease-out-expo)",
+        "slide-down": "slide-down 0.5s var(--ease-out-expo)",
+        "slide-right": "slide-right 0.4s var(--ease-out-expo)",
+        "scale-in": "scale-in 0.3s var(--ease-out-expo)",
+        "pulse-subtle": "pulse-subtle 4s ease-in-out infinite",
+        "spin-slow": "spin 8s linear infinite",
+        "breathe": "breathe 4s ease-in-out infinite",
       },
       keyframes: {
-        "glow-pulse": {
-          "0%": { opacity: "0.5", filter: "blur(8px)" },
-          "100%": { opacity: "1", filter: "blur(12px)" },
-        },
-        "slide-up": {
-          "0%": { transform: "translateY(10px)", opacity: "0" },
-          "100%": { transform: "translateY(0)", opacity: "1" },
-        },
         "fade-in": {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        "slide-up": {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-down": {
+          "0%": { opacity: "0", transform: "translateY(-16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-right": {
+          "0%": { opacity: "0", transform: "translateX(-16px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "0.4" },
+          "50%": { opacity: "0.8" },
+        },
+        "breathe": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.02)" },
+        },
+      },
+      transitionTimingFunction: {
+        "out-expo": "var(--ease-out-expo)",
+        "in-out-expo": "var(--ease-in-out-expo)",
+      },
+      borderRadius: {
+        "4xl": "2rem",
       },
     },
   },

@@ -2,60 +2,161 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   KernelSense — Design Tokens
+   An Operating System Intelligence Experience
+   ============================================================ */
+
 @layer base {
+  :root {
+    /* ---- Background Depth Layers ---- */
+    --void: #05060a;
+    --depth-1: #080a10;
+    --depth-2: #0c0f18;
+    --depth-3: #111520;
+
+    /* ---- Foreground ---- */
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --text-tertiary: #5f6368;
+    --text-ghost: rgba(255, 255, 255, 0.04);
+
+    /* ---- Semantic Subsystem Colors ---- */
+    --color-process: #22d3ee;      /* cyan-400 */
+    --color-memory: #818cf8;       /* indigo-400 */
+    --color-scheduler: #fb923c;    /* orange-400 */
+    --color-network: #34d399;      /* emerald-400 */
+    --color-filesystem: #a78bfa;   /* violet-400 */
+    --color-ai: #c084fc;           /* purple-400 */
+    --color-kernel: #f87171;       /* red-400 */
+
+    /* ---- Severity Scale ---- */
+    --severity-normal: #4ade80;    /* green-400 */
+    --severity-elevated: #facc15;  /* yellow-400 */
+    --severity-warning: #fb923c;   /* orange-400 */
+    --severity-critical: #ef4444;  /* red-500 */
+    --severity-prediction: #a78bfa;/* violet-400 */
+
+    /* ---- Surface ---- */
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --surface-active: rgba(255, 255, 255, 0.09);
+    --surface-border: rgba(255, 255, 255, 0.06);
+    --surface-glow: rgba(255, 255, 255, 0.02);
+
+    /* ---- Motion ---- */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   html {
-    @apply antialiased selection:bg-ring3 selection:text-white;
+    @apply antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    color: var(--text-primary);
+    background-color: var(--void);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.2);
+    color: white;
   }
 }
-@tailwind components;
-@tailwind utilities;
 
-:root {
-  --background: #030712; /* Tailwind gray-950 */
-  --foreground: #f9fafb; /* Tailwind gray-50 */
+/* ============================================================
+   Component Layer
+   ============================================================ */
 
-  /* Kernel Rings - Colors & Glows */
-  --ring-0: #ef4444; /* red-500 */
-  --ring-0-glow: rgba(239, 68, 68, 0.4);
-  
-  --ring-1: #f97316; /* orange-500 */
-  --ring-1-glow: rgba(249, 115, 22, 0.4);
-  
-  --ring-2: #06b6d4; /* cyan-500 */
-  --ring-2-glow: rgba(6, 182, 212, 0.4);
-  
-  --ring-3: #3b82f6; /* blue-500 */
-  --ring-3-glow: rgba(59, 130, 246, 0.4);
+@layer components {
+  /* Floating glass panel — the primary container */
+  .glass {
+    background: rgba(8, 10, 16, 0.7);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+      0 20px 60px -10px rgba(0, 0, 0, 0.5);
+  }
 
-  --ring-research: #8b5cf6; /* violet-500 */
-  --ring-research-glow: rgba(139, 92, 246, 0.4);
+  /* Subtle glass — lighter variant */
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+  }
 
-  /* Glass Surface Tokens */
-  --surface: rgba(9, 9, 11, 0.4); /* darker surface */
-  --surface-hover: rgba(24, 24, 27, 0.6);
-  --surface-active: rgba(39, 39, 42, 0.8);
-  --surface-border: rgba(255, 255, 255, 0.05); /* Thinner border */
+  /* The void gradient — layered depth background */
+  .void-gradient {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.03), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 50%, rgba(129, 140, 248, 0.02), transparent),
+      radial-gradient(ellipse 70% 50% at 20% 80%, rgba(251, 146, 60, 0.015), transparent),
+      linear-gradient(to bottom, var(--void), var(--depth-1));
+  }
+
+  /* Mono text display for data */
+  .data-value {
+    @apply font-mono tabular-nums tracking-tight;
+  }
+
+  /* Subsystem label */
+  .subsystem-label {
+    @apply text-[10px] font-medium uppercase tracking-[0.2em] opacity-50;
+  }
 }
 
-body {
-  color: var(--foreground);
-  background-color: #000000;
-  /* Complex mesh gradient to make it feel alive */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(20, 20, 40, 0.6), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(40, 20, 40, 0.4), transparent 30%),
-    radial-gradient(circle at 50% 80%, rgba(20, 40, 40, 0.4), transparent 40%),
-    radial-gradient(circle at 50% 0%, rgba(10, 10, 15, 1), transparent 100%);
-  background-attachment: fixed;
-  min-height: 100vh;
-}
+/* ============================================================
+   Utility Layer
+   ============================================================ */
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-black/60 backdrop-blur-2xl border border-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-2xl;
+  /* Glow effects per subsystem */
+  .glow-process { box-shadow: 0 0 30px -5px rgba(34, 211, 238, 0.15); }
+  .glow-memory { box-shadow: 0 0 30px -5px rgba(129, 140, 248, 0.15); }
+  .glow-scheduler { box-shadow: 0 0 30px -5px rgba(251, 146, 60, 0.15); }
+  .glow-kernel { box-shadow: 0 0 30px -5px rgba(248, 113, 113, 0.15); }
+  .glow-ai { box-shadow: 0 0 30px -5px rgba(192, 132, 252, 0.15); }
+
+  .glow-critical {
+    box-shadow: 0 0 40px -5px rgba(239, 68, 68, 0.2);
+    animation: critical-pulse 2s ease-in-out infinite;
   }
-  
-  .glass-button {
-    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 border border-white/5 backdrop-blur-md transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,0,0,0.39)] rounded-xl;
+
+  @keyframes critical-pulse {
+    0%, 100% { box-shadow: 0 0 40px -5px rgba(239, 68, 68, 0.2); }
+    50% { box-shadow: 0 0 60px -5px rgba(239, 68, 68, 0.35); }
+  }
+
+  /* Text gradient utility */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to bottom right, #e8eaed, #5f6368);
+  }
+
+  /* Noise texture overlay */
+  .noise {
+    position: relative;
+  }
+  .noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
   }
 }
