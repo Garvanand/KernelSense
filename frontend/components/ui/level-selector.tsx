@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { useAccessLevel, AccessLevel } from "@/lib/store/access-level"
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Shield, Cpu, Microscope } from "lucide-react"
+import { motion } from "framer-motion"
 
 const levels: {
   id: AccessLevel
@@ -44,28 +44,45 @@ export function LevelSelector() {
   const { level, setLevel } = useAccessLevel()
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
-      {levels.map((l) => (
-        <Card 
+    <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+      {levels.map((l, idx) => (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.1, duration: 0.5, ease: "easeOut" }}
           key={l.id}
           className={cn(
-            "cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:bg-white/10",
-            level === l.id ? `border-${l.colorClass.split("-")[1]} ${l.glowClass} bg-white/5` : "border-white/5"
+            "relative cursor-pointer transition-all duration-500 overflow-hidden rounded-2xl border",
+            level === l.id 
+              ? `border-${l.colorClass.split("-")[1]} ${l.glowClass} bg-white/10 scale-105 z-10` 
+              : "border-white/5 bg-black/40 hover:bg-white/5 hover:border-white/10 hover:scale-[1.02]"
           )}
           onClick={() => setLevel(l.id)}
         >
-          <CardHeader className="space-y-4">
-            <div className={cn("p-3 rounded-xl w-fit bg-white/5", level === l.id ? l.colorClass : "text-slate-400")}>
-              <l.icon className="w-6 h-6" />
+          {/* Animated Background Gradient on Selection */}
+          {level === l.id && (
+            <motion.div 
+              layoutId="activeGlow"
+              className={cn("absolute inset-0 opacity-20", `bg-${l.colorClass.split("-")[1]}`)}
+              initial={false}
+              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
+          )}
+
+          <div className="relative p-6 space-y-6 z-20">
+            <div className={cn("p-4 rounded-xl w-fit bg-white/5 backdrop-blur-md shadow-inner shadow-white/10 transition-colors duration-300", level === l.id ? l.colorClass : "text-slate-400")}>
+              <l.icon className="w-8 h-8" />
             </div>
-            <div className="space-y-1">
-              <CardTitle className={level === l.id ? l.colorClass : "text-slate-200"}>
+            <div className="space-y-2">
+              <h3 className={cn("text-xl font-bold tracking-tight transition-colors duration-300", level === l.id ? l.colorClass : "text-slate-200")}>
                 {l.title}
-              </CardTitle>
-              <CardDescription>{l.description}</CardDescription>
+              </h3>
+              <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                {l.description}
+              </p>
             </div>
-          </CardHeader>
-        </Card>
+          </div>
+        </motion.div>
       ))}
     </div>
   )

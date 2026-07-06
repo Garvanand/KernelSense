@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    @apply antialiased selection:bg-ring3 selection:text-white;
+  }
+}
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --background: #030712; /* Tailwind gray-950 */
   --foreground: #f9fafb; /* Tailwind gray-50 */
@@ -23,27 +31,31 @@
   --ring-research-glow: rgba(139, 92, 246, 0.4);
 
   /* Glass Surface Tokens */
-  --surface: rgba(15, 23, 42, 0.4); /* slate-900 / 40% */
-  --surface-hover: rgba(15, 23, 42, 0.6);
-  --surface-active: rgba(15, 23, 42, 0.8);
-  --surface-border: rgba(255, 255, 255, 0.1);
+  --surface: rgba(9, 9, 11, 0.4); /* darker surface */
+  --surface-hover: rgba(24, 24, 27, 0.6);
+  --surface-active: rgba(39, 39, 42, 0.8);
+  --surface-border: rgba(255, 255, 255, 0.05); /* Thinner border */
 }
 
 body {
   color: var(--foreground);
-  background-color: var(--background);
-  /* A very subtle noise texture can be added via SVG in real-world, we keep it clean dark here */
-  background-image: radial-gradient(circle at 50% -20%, rgba(30, 41, 59, 0.5), transparent 80%);
+  background-color: #000000;
+  /* Complex mesh gradient to make it feel alive */
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(20, 20, 40, 0.6), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(40, 20, 40, 0.4), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(20, 40, 40, 0.4), transparent 40%),
+    radial-gradient(circle at 50% 0%, rgba(10, 10, 15, 1), transparent 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
 
 @layer utilities {
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-inner shadow-white/5;
+    @apply bg-black/60 backdrop-blur-2xl border border-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-2xl;
   }
   
   .glass-button {
-    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all duration-300;
+    @apply relative overflow-hidden bg-white/5 hover:bg-white/10 border border-white/5 backdrop-blur-md transition-all duration-300 shadow-[0_4px_14px_0_rgba(0,0,0,0.39)] rounded-xl;
   }
 }

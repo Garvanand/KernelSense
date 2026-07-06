@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, Terminal, Cpu, HardDrive } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { useAccessLevel } from '@/lib/store/access-level';
+import { cn } from '@/lib/utils';
 
 export interface IncidentExplanation {
   diagnostic: string;
@@ -37,7 +38,18 @@ export function IncidentFeed({ incidents }: { incidents: Incident[] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <motion.div 
+      variants={{
+        hidden: { opacity: 0 },
+        show: {
+          opacity: 1,
+          transition: { staggerChildren: 0.15 }
+        }
+      }}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
       <AnimatePresence>
         {incidents.map((incident) => {
           const isCritical = incident.severity_score > 0.9;
@@ -49,12 +61,18 @@ export function IncidentFeed({ incidents }: { incidents: Incident[] }) {
           return (
             <motion.div
               key={incident.id}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`glass-panel p-6 rounded-2xl border ${borderClass} ${bgClass} ${shadowClass}`}
+              layout
+              variants={{
+                hidden: { opacity: 0, y: 30, scale: 0.95 },
+                show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", bounce: 0.3 } }
+              }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+              className={`glass-panel p-8 rounded-3xl border ${borderClass} ${bgClass} ${shadowClass} relative overflow-hidden group hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-shadow duration-500`}
             >
-              <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
+              {/* Subtle accent light */}
+              <div className={cn("absolute top-0 right-0 w-64 h-64 bg-current opacity-[0.03] rounded-full blur-[50px] pointer-events-none group-hover:opacity-[0.06] transition-opacity duration-500", iconColor)} />
+
+              <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-6 relative z-10">
                 <div className="flex items-center space-x-3">
                   {incident.incident_type === 'leak_anomaly' ? (
                     <HardDrive className={`w-6 h-6 ${iconColor}`} />
@@ -107,6 +125,6 @@ export function IncidentFeed({ incidents }: { incidents: Incident[] }) {
           );
         })}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
