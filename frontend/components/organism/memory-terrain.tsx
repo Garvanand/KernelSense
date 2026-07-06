@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import useSWR from "swr";
-import { apiClient } from "@/lib/api-client";
-
-const fetcher = (url: string) => apiClient.get<any>(url);
+import { useTelemetryStore } from "@/lib/store/telemetry-store";
 
 export function MemoryTerrain() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { data: memory } = useSWR("/memory", fetcher, { refreshInterval: 2000 });
+  const memory = useTelemetryStore((s) => s.memory);
 
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current) return;

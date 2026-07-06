@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import useSWR from "swr";
-import { apiClient } from "@/lib/api-client";
 import { useAccessLevel } from "@/lib/store/access-level";
-
-const fetcher = (url: string) => apiClient.get<any>(url);
+import { useTelemetryStore } from "@/lib/store/telemetry-store";
 
 export function CpuTopology() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { data: scheduler } = useSWR("/scheduler", fetcher, { refreshInterval: 1000 });
+  const scheduler = useTelemetryStore((s) => s.scheduler);
   const { level } = useAccessLevel();
 
   useEffect(() => {

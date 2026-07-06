@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
-import { apiClient } from "@/lib/api-client";
 import { motion } from "framer-motion";
 import { useAccessLevel } from "@/lib/store/access-level";
+import { useTelemetryStore } from "@/lib/store/telemetry-store";
 
 // Mock AI insights for research mode
 const INSIGHTS = [
@@ -35,7 +34,7 @@ interface Node {
 export function SystemOrganism() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { data: processes } = useSWR("/processes?limit=100", fetcher, { refreshInterval: 2000 });
+  const processes = useTelemetryStore((s) => s.processes);
   const [insightIndex, setInsightIndex] = useState(0);
   const { level } = useAccessLevel();
 

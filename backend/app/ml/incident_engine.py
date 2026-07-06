@@ -2,6 +2,7 @@ import asyncio
 from sqlalchemy import select, update
 from backend.app.db.database import AsyncSessionLocal
 from backend.app.db.models.prediction import Prediction
+from backend.app.api.ws import manager as ws_manager
 # Using the predictions table to also store incidents to avoid a schema migration
 # We will encode 'incident_status' in the payload JSON: 'unconfirmed', 'active', 'resolved'
 
@@ -42,8 +43,28 @@ class IncidentEngineWorker:
                     else:
                         payload["incident_status"] = "dropped"
                         
-                    # Update row
                     p.payload = payload
                     session.add(p)
                     
             await session.commit()
+            
+            # Broadcast updated active incidents
+            stmt_all = select(Prediction).where(Prediction.score > 0.8)
+            result_all = await session.execute(stmt_all)
+            active = result_all.scalars().all()
+            
+            incidents_payload = []
+            for a in active:
+                payload = a.payload or {}
+                if payload.get("incident_status") == "active":
+                    incidents_payload.append({
+                        "id": str(a.id),
+                        "entity_type": a.entity_type,
+                        "entity_id": a.entity_id,
+                        "incident_type": a.anomaly_type,
+                        "severity_score": a.score,
+                        "explanation": payload.get("explanation", {})
+                    })
+                    
+            if incidents_payload:
+                asyncio.create_task(ws_manager.broadcast("incidents", incidents_payload))

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WebSocketProvider } from "@/components/providers/websocket-provider";
 
 export const metadata: Metadata = {
   title: "KernelSense — Operating System Intelligence",
@@ -22,10 +23,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
-        <div className="void-gradient noise fixed inset-0 z-0" />
-        <div className="relative z-10 h-screen w-screen overflow-hidden">
-          {children}
-        </div>
+        <WebSocketProvider>
+          <div className="void-gradient noise fixed inset-0 z-0" />
+          <div className="relative z-10 h-screen w-screen overflow-hidden">
+            {children}
+          </div>
+        </WebSocketProvider>
       </body>
     </html>
   );

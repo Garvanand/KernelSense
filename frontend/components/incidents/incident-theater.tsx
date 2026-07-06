@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
-import { apiClient } from "@/lib/api-client";
 import { useAccessLevel } from "@/lib/store/access-level";
+import { useTelemetryStore } from "@/lib/store/telemetry-store";
 import { motion, AnimatePresence } from "framer-motion";
 import { DEMO_INCIDENTS } from "@/lib/demo-data";
 
 export function IncidentTheater() {
   const { level, demoMode } = useAccessLevel();
-  const { data: rawIncidents } = useSWR(demoMode ? null : "/incidents", (url: string) => apiClient.get<any[]>(url), { refreshInterval: 3000 });
+  const rawIncidents = useTelemetryStore((s) => s.incidents);
   const incidents = demoMode ? DEMO_INCIDENTS : (rawIncidents || []);
   
   const [selectedIncident, setSelectedIncident] = useState<any>(null);

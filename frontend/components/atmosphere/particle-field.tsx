@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import useSWR from "swr";
-import { apiClient } from "@/lib/api-client";
-
-const fetcher = (url: string) => apiClient.get<any[]>(url);
+import { useTelemetryStore } from "@/lib/store/telemetry-store";
 
 interface Particle {
   x: number;
@@ -21,7 +18,7 @@ export function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   // Use process count as a proxy for system load to drive particle density
-  const { data: processes } = useSWR("/processes?limit=100", fetcher, { refreshInterval: 5000 });
+  const processes = useTelemetryStore((s) => s.processes);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -6,8 +6,14 @@ from backend.app.db.repositories.telemetry import TelemetryRepository
 from backend.app.db.models.prediction import Prediction
 from pydantic import BaseModel
 from typing import List, Optional
+import time
 
 router = APIRouter()
+
+_cache = {
+    "data": None,
+    "last_update": 0
+}
 
 class MemoryComposition(BaseModel):
     total_bytes: int

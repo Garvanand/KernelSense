@@ -11,6 +11,7 @@ from backend.app.db.models.process_snapshot import ProcessSnapshot
 from backend.app.db.models.resource_metric import ResourceMetric
 from backend.app.db.models.scheduler_event import SchedulerEvent
 from backend.app.db.database import AsyncSessionLocal
+from backend.app.api.ws import manager as ws_manager
 
 logger = structlog.get_logger()
 
@@ -54,6 +55,16 @@ class TelemetryIngestWorker:
                 
                 if payload:
                     self._buffer.append(payload)
+                    
+                    # Convert payload to dict for JSON serialization and broadcast immediately
+                    # Limit to top 100 processes to avoid massive WebSocket frames
+                    payload_dict = payload.model_dump()
+                    if len(payload_dict.get("processes", [])) > 100:
+                        # Sort by cpu/memory to get the most relevant ones
+                        sorted_procs = sorted(payload_dict["processes"], key=lambda x: (x.get("cpu_percent", 0) + x.get("mem_percent", 0)), reverse=True)
+                        payload_dict["processes"] = sorted_procs[:100]
+                        
+                    asyncio.create_task(ws_manager.broadcast("telemetry", payload_dict))
                     
                 if len(self._buffer) >= self.batch_size:
                     await self._flush_buffer()
