@@ -15,6 +15,10 @@ class LinuxPsutilCollector(BaseCollector):
         psutil.cpu_percent(percpu=True)
         psutil.cpu_times_percent()
         
+        # Track context switches
+        self._last_ctx_switches = psutil.cpu_stats().ctx_switches
+        self._last_time = time.time()
+        
     def collect(self) -> TelemetryPayload:
         ts = time.time()
         
@@ -27,6 +31,17 @@ class LinuxPsutilCollector(BaseCollector):
         load_avg = None
         if hasattr(psutil, 'getloadavg'):
             load_avg = list(psutil.getloadavg())
+            
+        # Compute context switch rate
+        current_stats = psutil.cpu_stats()
+        current_ctx = current_stats.ctx_switches
+        time_delta = ts - self._last_time
+        ctx_rate = 0
+        if time_delta > 0:
+            ctx_rate = int((current_ctx - self._last_ctx_switches) / time_delta)
+            
+        self._last_ctx_switches = current_ctx
+        self._last_time = ts
             
         sys_metrics = SystemMetrics(
             cpu_percent=cpu_perc,
@@ -42,7 +57,9 @@ class LinuxPsutilCollector(BaseCollector):
             net_bytes_sent=net.bytes_sent,
             net_bytes_recv=net.bytes_recv,
             linux_iowait_percent=getattr(cpu_times, 'iowait', None),
-            linux_load_avg=load_avg
+            linux_load_avg=load_avg,
+            linux_ebpf_context_switches=ctx_rate, # Populate this for the frontend
+            windows_etw_context_switches=ctx_rate # Populate this for the frontend
         )
         
         processes = []

@@ -30,9 +30,9 @@ export const useTelemetryStore = create<TelemetryState>((set) => ({
             } 
         } : state.memory,
         scheduler: data.system_metrics ? {
-            context_switch_rate: data.system_metrics.linux_ebpf_context_switches || 0,
+            context_switch_rate: data.system_metrics.linux_ebpf_context_switches || data.system_metrics.windows_etw_context_switches || 0,
             run_queue_latency_ms: 0,
-            cores: Array.from({length: 16}, (_, i) => ({ core_id: i, utilization_percent: data.system_metrics.cpu_user_percent / 16 }))
+            cores: data.system_metrics.cpu_percent ? data.system_metrics.cpu_percent.map((util: number, i: number) => ({ core_id: i, utilization_percent: util })) : []
         } : state.scheduler
       };
     } else if (topic === "incidents") {
