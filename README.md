@@ -1,102 +1,83 @@
-
-
 <div align="center">
-  <h1>KernelSense</h1>
-  <p><strong>Your operating system, understood and foreseen.</strong></p>
+  <h1>KernelSense: OS Universe</h1>
+  <p><strong>The Operating System is no longer a black box. It is a living, breathing universe.</strong></p>
   <p>
-    An AI-augmented, real-time operating system observatory. Combining high-fidelity OS telemetry with predictive machine learning and an immersive glassmorphism UI.
+    An interactive, WebGL-accelerated Operating System Digital Twin. We abandoned traditional dashboards to build an infinite canvas where every core OS concept is visualized, animated, and observable in real-time.
   </p>
 </div>
-
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green)](https://fastapi.tiangolo.com/)
 
-KernelSense is a cross-platform operating system telemetry engine that combines low-overhead instrumentation with local machine learning inference. It provides real-time observability into kernel scheduling, memory allocation, and process genealogy, while automatically detecting anomalies like memory leaks and scheduler contention without requiring off-site data exfiltration.
+KernelSense is a cross-platform telemetry engine connected to an **immersive React Flow infinite canvas**. It translates raw OS metrics (eBPF/ETW) into a stunning, animated representation of your machine's internals. 
 
 **Why not just use `htop` or Task Manager?**
-Standard monitors tell you what is happening *right now*. KernelSense tells you what is going to happen *next*. By feeding live OS telemetry through a localized PyTorch LSTM pipeline, it surfaces impending Out-Of-Memory (OOM) risks, builds Graph Neural Network (GNN) matrices of process IPC contention, and generates root-cause analysis via a strictly bounded LLM—all displayed through an immersive, access-gated Next.js dashboard.
+Because metrics don't teach you *how* an OS works. KernelSense is built for visual learners, engineers, and computer science students. It answers the question: *How can a user see, understand, interact with, and learn what the Operating System is actually doing internally, in real time?*
 
-![System Dashboard Placeholder](./assets/dashboard.gif)
+## 🌌 The OS Universe
 
-## Architecture
+The UI is a perfectly symmetric, 3-tier architectural diagram of your machine, featuring **15 Animated Custom Nodes**:
 
-KernelSense operates entirely locally, utilizing a decoupled architecture:
+### 1. User Space (Top Tier)
+* **Process Genealogy:** A living tree of parent/child process relationships.
+* **Network Stack:** Visualizes live socket throughput and packet streams.
+* **Inter-Process Comm:** Visualizes anonymous pipes and shared memory segments.
 
-1. **Instrumentation Layer**: Collects system metrics (via `psutil`, eBPF on Linux, ETW on Windows) at high frequency (1-5Hz).
-2. **AI Inference Pipeline**: A background worker evaluates sliding temporal windows using PyTorch-based models (LSTM forecasting, GNN contention mapping, MLP anomaly detection).
-3. **Incident Engine**: High-confidence predictions are promoted to incidents and enriched with root-cause diagnostics using a bounded LLM interface.
-4. **Presentation Layer**: A Next.js dashboard that visualizes the telemetry and incidents.
+### 2. Kernel Core (Middle Tier)
+* **CPU Scheduler:** Watch processes flow through Ready and Blocked queues, executing on cores.
+* **Deadlock Detector:** A Resource Allocation Graph dynamically drawing "Holds" and "Waits" vectors.
+* **Context Switch Engine:** Visualizes the micro-state transitions of flushing TLBs and saving registers.
+* **Virtual File System:** Visualizes the Global File Descriptor Table and Inode Cache.
+* **System Calls:** Live tracking of kernel traps.
 
-## Features
+### 3. Hardware & Memory (Bottom Tier)
+* **Memory Management Unit (MMU):** Maps Virtual Space to Physical RAM, highlighting page faults.
+* **Swap Space:** Disk paging area with real-time thrashing anomaly detection.
+* **Block I/O Storage:** Visualizes disk read/write throughput and buffer caches.
+* **Hardware IRQs:** Live Interrupt Vector Table.
+* **GPU & Energy:** Compute utilization, VRAM allocation, package thermals, and power draw.
 
-- **Cross-Platform Telemetry**: Supports Linux, macOS, and Windows.
-- **Local ML Inference**: Built-in PyTorch models for forecasting CPU/memory saturation and detecting monotonic heap growth.
-- **Zero-Trust Access Model**: Granular clearance levels (Guest, Power User, Kernel, Research) dictate the depth of telemetry exposed via the API.
-- **High-Frequency Rendering**: Frontend optimizations (Dagre layouts, D3 canvas, Canvas/Block aggregations) capable of rendering thousands of context switches per second without DOM blocking.
+## ⏪ Historical DVR Time-Travel
+Noticed a spike in CPU? Don't miss it. Use the **Timeline DVR Scrubber** at the bottom of the screen to seamlessly pause the live feed, drag the slider back in time, and watch the entire OS Universe rewind to the exact state of the machine 5 minutes ago. 
 
-## Prerequisites
+## 🤖 AI Professor
+Integrated directly into the canvas, the AI Professor panel continuously analyzes the live telemetry and historical state. Ask it why a specific process is blocked, and it will explain the exact OS mechanics (e.g., waiting on I/O, waiting on a mutex) using the live context of your machine.
 
-- **Backend**: Python 3.10+, SQLite or PostgreSQL
-- **Frontend**: Node.js 18+, npm or yarn
-- **OS**: Linux (eBPF headers required for deep tracing), macOS, or Windows 10/11.
+---
 
-## Installation
+## 🚀 Quick Start
 
-### 1. Backend Service
-
-The backend handles ingestion, ML inference, and serves the API.
-
+### 1. Backend Service (Telemetry Ingestion & DVR)
 ```bash
 git clone https://github.com/Garvanand/KernelSense.git
 cd KernelSense/backend
 
-# Initialize virtual environment
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
 
-# Start the server (includes background ingestion workers)
+# Start the ingestion worker and FastAPI server
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 2. Frontend Dashboard
-
-The frontend is a Next.js App Router application.
-
+### 2. Frontend Universe (Next.js + React Flow)
 ```bash
 cd ../frontend
-
-# Install dependencies
 npm install
 
-# Start the development server
+# Launch the infinite canvas
 npm run dev
 ```
+Open `http://localhost:3000` to enter the OS Universe.
 
-The dashboard will be available at `http://localhost:3000`.
+---
 
-## Configuration
-
-Backend behavior is controlled via environment variables (can be placed in a `.env` file in the `backend/` directory):
-
-- `SAMPLING_INTERVAL_SEC` (default: `1.0`): Frequency of telemetry collection.
-- `INGEST_BATCH_SIZE` (default: `50`): Number of metrics to batch before database commit.
-- `DATABASE_URL` (default: `sqlite+aiosqlite:///./telemetry.db`): SQLAlchemy connection string.
-
-## Documentation
-
-For deep-dives into internal architecture and design constraints, refer to the project docs:
-
-- **[Talking Points](./docs/TALKING_POINTS.md)**: The hardest engineering problems solved.
-- **[Installation Guide](./docs/INSTALLATION.md)**: Advanced per-OS installation (eBPF).
-- **[User Guide](./docs/USER_GUIDE.md)**: Detailed breakdown of the UI and clearance levels.
-- **[Developer Guide](./docs/DEVELOPER_GUIDE.md)**: How to contribute to the codebase.
-- **[Security & RBAC](./docs/SECURITY.md)**: The Zero-Trust enforcement model.
+## Architecture
+1. **Instrumentation (Python):** Collects metrics via `psutil`, eBPF (Linux), or ETW (Windows) at 1-5Hz.
+2. **Local Database (SQLite):** Buffers telemetry for the Historical DVR timeline.
+3. **WebSocket Stream:** Pushes JSON payloads of the active system state to the frontend.
+4. **Zustand + React Flow:** The UI intercepts the data, mapping it to the 15 animated nodes on the WebGL canvas, intercepting updates when the DVR is active.
 
 ## License
-
-KernelSense is distributed under the MIT License. See `LICENSE` for more information.
+KernelSense is distributed under the MIT License. See `LICENSE` for more information.n.

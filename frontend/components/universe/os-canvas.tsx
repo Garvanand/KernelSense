@@ -49,49 +49,51 @@ const nodeTypes = {
   swap: SwapNode,
 };
 
-// Systematic Layout (User Space -> Kernel -> Hardware)
+// Symmetrical Tiered Architecture Layout (User Space -> Kernel -> Hardware)
+// X-axis symmetry: 0 is center, steps of 450
 const initialNodes = [
-  // --- TOP TIER: User Space & Networking ---
-  { id: "process-tree", type: "process-tree", position: { x: -450, y: -400 }, data: {} },
-  { id: "ipc", type: "ipc", position: { x: 50, y: -400 }, data: {} },
-  { id: "network", type: "network", position: { x: 500, y: -400 }, data: {} },
+  // --- TOP TIER: User Space & Networking (Y = -600) ---
+  { id: "network", type: "network", position: { x: -450, y: -600 }, data: {} },
+  { id: "process-tree", type: "process-tree", position: { x: 0, y: -600 }, data: {} },
+  { id: "ipc", type: "ipc", position: { x: 450, y: -600 }, data: {} },
   
-  // --- MIDDLE TIER: Kernel Core ---
-  { id: "syscalls", type: "syscalls", position: { x: -300, y: -150 }, data: {} },
-  { id: "scheduler", type: "scheduler", position: { x: 50, y: -50 }, data: {} },
-  { id: "context-switch", type: "context-switch", position: { x: 600, y: -150 }, data: {} },
-  { id: "deadlock", type: "deadlock", position: { x: 900, y: -50 }, data: {} },
-  { id: "filesystem", type: "filesystem", position: { x: -650, y: 50 }, data: {} },
+  // --- MIDDLE TIER: Kernel Core (Y = -150) ---
+  { id: "filesystem", type: "filesystem", position: { x: -900, y: -150 }, data: {} },
+  { id: "syscalls", type: "syscalls", position: { x: -450, y: -150 }, data: {} },
+  { id: "scheduler", type: "scheduler", position: { x: 0, y: -150 }, data: {} },
+  { id: "context-switch", type: "context-switch", position: { x: 450, y: -150 }, data: {} },
+  { id: "deadlock", type: "deadlock", position: { x: 900, y: -150 }, data: {} },
   
-  // --- BOTTOM TIER: Hardware & Memory ---
-  { id: "memory", type: "memory", position: { x: -100, y: 350 }, data: {} },
-  { id: "swap", type: "swap", position: { x: 550, y: 350 }, data: {} },
-  { id: "storage", type: "storage", position: { x: -500, y: 350 }, data: {} },
-  { id: "cache", type: "cache", position: { x: 250, y: 150 }, data: {} },
-  { id: "interrupts", type: "interrupts", position: { x: -350, y: 150 }, data: {} },
-  
-  // --- SIDE PERIPHERALS ---
-  { id: "gpu", type: "gpu", position: { x: 900, y: 250 }, data: {} },
-  { id: "energy", type: "energy", position: { x: -950, y: 250 }, data: {} },
+  // --- BOTTOM TIER: Hardware & Memory (Y = 300) ---
+  { id: "interrupts", type: "interrupts", position: { x: -1350, y: 300 }, data: {} },
+  { id: "storage", type: "storage", position: { x: -900, y: 300 }, data: {} },
+  { id: "cache", type: "cache", position: { x: -450, y: 300 }, data: {} },
+  { id: "memory", type: "memory", position: { x: 0, y: 300 }, data: {} },
+  { id: "swap", type: "swap", position: { x: 450, y: 300 }, data: {} },
+  { id: "gpu", type: "gpu", position: { x: 900, y: 300 }, data: {} },
+  { id: "energy", type: "energy", position: { x: 1350, y: 300 }, data: {} },
 ];
 
 const initialEdges = [
-  // User to Kernel
+  // User Space -> Kernel Space (Downwards)
+  { id: "e-net-sched", source: "network", target: "scheduler", animated: true, style: { stroke: "rgba(16,185,129,0.5)" } },
   { id: "e-tree-sched", source: "process-tree", target: "scheduler", animated: true, style: { stroke: "var(--color-process)", strokeWidth: 2 } },
   { id: "e-tree-ipc", source: "process-tree", target: "ipc", animated: true, style: { stroke: "var(--color-process)" } },
-  { id: "e-net-sched", source: "network", target: "scheduler", animated: true, style: { stroke: "rgba(16,185,129,0.5)" } },
+  
+  // Kernel Internal (Horizontal/Diagonal)
   { id: "e-sys-sched", source: "syscalls", target: "scheduler", animated: true, style: { stroke: "rgba(217,70,239,0.5)" } },
-  
-  // Kernel Core Connections
-  { id: "e-sched-cs", source: "scheduler", sourceHandle: "bottom", target: "context-switch", animated: true, style: { stroke: "var(--color-scheduler)", strokeWidth: 2 } },
+  { id: "e-sched-cs", source: "scheduler", target: "context-switch", animated: true, style: { stroke: "var(--color-scheduler)", strokeWidth: 2 } },
   { id: "e-sched-deadlock", source: "scheduler", target: "deadlock", animated: true, style: { stroke: "rgba(251,146,60,0.5)" } },
-  { id: "e-fs-storage", source: "filesystem", target: "storage", animated: true, style: { stroke: "rgba(14,165,233,0.5)", strokeWidth: 2 } },
   
-  // Kernel to Hardware/Memory
+  // Kernel Space -> Hardware Space (Downwards)
+  { id: "e-fs-storage", source: "filesystem", target: "storage", animated: true, style: { stroke: "rgba(14,165,233,0.5)", strokeWidth: 2 } },
   { id: "e-sched-mem", source: "scheduler", target: "memory", animated: true, style: { stroke: "var(--color-memory)", strokeWidth: 2 } },
   { id: "e-mem-swap", source: "memory", target: "swap", animated: true, style: { stroke: "rgba(168,85,247,0.5)", strokeWidth: 2 } },
+  
+  // Hardware Internal (Upwards/Diagonal to Kernel)
   { id: "e-cache-mem", source: "cache", target: "memory", animated: true, style: { stroke: "rgba(234,179,8,0.5)" } },
-  { id: "e-int-mem", source: "interrupts", target: "memory", animated: true, style: { stroke: "rgba(244,63,94,0.5)" } },
+  { id: "e-int-sched", source: "interrupts", target: "scheduler", animated: true, style: { stroke: "rgba(244,63,94,0.5)" } },
+  { id: "e-energy-gpu", source: "energy", target: "gpu", animated: true, style: { stroke: "rgba(245,158,11,0.5)" } },
 ];
 
 export default function OSUniverseCanvas() {

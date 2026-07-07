@@ -61,13 +61,20 @@ export interface TelemetryState {
   resourceHistory: ResourceHistoryPoint[];
   isConnected: boolean;
   lastUpdate: number;
+  
+  // DVR
+  dvrBuffer: any[];
+  activeFrameIndex: number | null;
+  
   setTelemetry: (topic: string, data: any) => void;
   setIsConnected: (connected: boolean) => void;
+  fetchDVRBuffer: () => Promise<void>;
+  setActiveFrame: (index: number | null) => void;
 }
 
 const MAX_HISTORY = 200;
 
-export const useTelemetryStore = create<TelemetryState>((set) => ({
+export const useTelemetryStore = create<TelemetryState>((set, get) => ({
   processes: [],
   systemMetrics: null,
   cores: [],
@@ -77,6 +84,10 @@ export const useTelemetryStore = create<TelemetryState>((set) => ({
   resourceHistory: [],
   isConnected: false,
   lastUpdate: 0,
+  
+  dvrBuffer: [],
+  activeFrameIndex: null,
+
   setTelemetry: (topic, data) => set((state) => {
     if (topic === "telemetry") {
       const sm = data.system_metrics;
@@ -94,6 +105,18 @@ export const useTelemetryStore = create<TelemetryState>((set) => ({
       const history = newPoint 
         ? [...state.resourceHistory, newPoint].slice(-MAX_HISTORY) 
         : state.resourceHistory;
+        
+      // Keep adding to DVR buffer in background
+      const dvrBuffer = [...state.dvrBuffer, data].slice(-300);
+
+      // If we are in historical mode (DVR), don't update the active view
+      if (state.activeFrameIndex !== null) {
+         return {
+           ...state,
+           resourceHistory: history,
+           dvrBuffer: dvrBuffer,
+         };
+      }
 
       return {
         ...state,
@@ -109,6 +132,7 @@ export const useTelemetryStore = create<TelemetryState>((set) => ({
           percent: sm.mem_percent || 0,
         } : state.memory,
         resourceHistory: history,
+        dvrBuffer: dvrBuffer,
         lastUpdate: Date.now(),
       };
     } else if (topic === "incidents") {
@@ -116,5 +140,46 @@ export const useTelemetryStore = create<TelemetryState>((set) => ({
     }
     return state;
   }),
+  
   setIsConnected: (connected) => set({ isConnected: connected }),
+  
+  fetchDVRBuffer: async () => {
+     try {
+        const res = await fetch("http://localhost:8000/api/v1/dvr/history?minutes=5");
+        if (res.ok) {
+           const data = await res.json();
+           set({ dvrBuffer: data });
+        }
+     } catch (e) {
+        console.error("Failed to fetch DVR history", e);
+     }
+  },
+  
+  setActiveFrame: (index) => {
+     const state = get();
+     if (index === null) {
+        set({ activeFrameIndex: null });
+        return;
+     }
+     
+     if (index >= 0 && index < state.dvrBuffer.length) {
+        const frame = state.dvrBuffer[index];
+        const sm = frame.system_metrics;
+        
+        set({
+           activeFrameIndex: index,
+           processes: frame.processes || [],
+           systemMetrics: sm || null,
+           cores: sm?.cpu_percent 
+             ? sm.cpu_percent.map((util: number, i: number) => ({ core_id: i, utilization_percent: util })) 
+             : [],
+           contextSwitchRate: sm?.linux_ebpf_context_switches || sm?.windows_etw_context_switches || 0,
+           memory: sm ? {
+             total_bytes: sm.mem_total_bytes || 0,
+             used_bytes: sm.mem_used_bytes || 0,
+             percent: sm.mem_percent || 0,
+           } : null,
+        });
+     }
+  }
 }));

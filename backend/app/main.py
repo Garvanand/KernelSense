@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.core.config import settings
 from backend.app.core.logging import setup_logging
-from backend.app.api import processes, resources, health, access, memory, scheduler, incidents, ws
+from backend.app.api import processes, resources, health, access, memory, scheduler, incidents, ws, dvr
 
 from backend.app.db.database import engine
 from backend.app.db.models.base import Base
@@ -85,3 +85,4 @@ app.include_router(incidents.router, prefix="/api/v1/incidents", tags=["incident
 app.include_router(processes.router, prefix=f"{settings.API_V1_STR}/processes", tags=["processes"])
 app.include_router(resources.router, prefix=f"{settings.API_V1_STR}/resources", tags=["resources"])
 app.include_router(ws.router, prefix=f"{settings.API_V1_STR}/ws", tags=["ws"])
+app.include_router(dvr.router, prefix=f"{settings.API_V1_STR}/dvr", tags=["dvr"])
