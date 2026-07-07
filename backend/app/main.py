@@ -77,7 +77,7 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(health.router, prefix="/health", tags=["health"])
+app.include_router(health.router, prefix="/api/v1/health", tags=["health"])
 app.include_router(access.router, prefix="/api/v1/access", tags=["access"])
 app.include_router(memory.router, prefix="/api/v1/memory", tags=["memory"])
 app.include_router(scheduler.router, prefix="/api/v1/scheduler", tags=["scheduler"])

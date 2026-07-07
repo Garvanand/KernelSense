@@ -3,15 +3,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.db.database import get_db
 from backend.app.db.repositories.telemetry import TelemetryRepository
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
 class ResourceResponse(BaseModel):
     timestamp: float
     cpu_user_percent: float
-    mem_percent: float
-    disk_read_bytes: int
+    cpu_system_percent: float = 0.0
+    cpu_idle_percent: float = 0.0
+    mem_total_bytes: int = 0
+    mem_used_bytes: int = 0
+    mem_percent: float = 0.0
+    disk_read_bytes: int = 0
+    disk_write_bytes: int = 0
+    net_bytes_sent: int = 0
+    net_bytes_recv: int = 0
     
     class Config:
         from_attributes = True

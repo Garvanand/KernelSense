@@ -4,6 +4,7 @@ from sqlalchemy import select, desc
 from backend.app.db.database import get_db
 from backend.app.db.repositories.telemetry import TelemetryRepository
 from backend.app.db.models.prediction import Prediction
+from backend.app.db.models.resource_metric import ResourceMetric
 from pydantic import BaseModel
 from typing import List, Optional
 import time
@@ -40,55 +41,47 @@ async def get_memory_intelligence(db: AsyncSession = Depends(get_db)):
     if _cache["data"] and (now - _cache["last_update"]) < 1.0:
         return _cache["data"]
 
-    repo = TelemetryRepository(db)
+    # Fetch latest resource metric which has real mem_total_bytes and mem_used_bytes
+    stmt = select(ResourceMetric).order_by(desc(ResourceMetric.timestamp)).limit(1)
+    result = await db.execute(stmt)
+    latest = result.scalars().first()
     
-    # 1. Fetch latest system memory composition
-    # The TelemetrySampler currently only saves 'mem_percent' in ResourceMetric.
-    # To fake 'total', 'used', 'free' for this specific view demo without altering
-    # the entire DB schema, we will assume a 16GB system for structural UI demonstration.
-    # In a real impl, we'd fetch actual psutil.virtual_memory() fields.
-    
-    # Fetch latest resource metric
-    resources = await repo.get_latest_resources(limit=1)
-    
-    TOTAL_SYS_MEM = 16 * 1024 * 1024 * 1024 # 16 GB baseline for visualization
-    percent = 0.0
-    used_bytes = 0
-    free_bytes = TOTAL_SYS_MEM
-    
-    if resources:
-        percent = resources[0].mem_percent
-        used_bytes = int(TOTAL_SYS_MEM * (percent / 100.0))
-        free_bytes = TOTAL_SYS_MEM - used_bytes
+    if latest and latest.mem_total_bytes > 0:
+        total = latest.mem_total_bytes
+        used = latest.mem_used_bytes
+        free = total - used
+        percent = latest.mem_percent
+    else:
+        # Fallback if DB is empty
+        total = 16 * 1024 * 1024 * 1024
+        used = 0
+        free = total
+        percent = 0.0
         
     composition = MemoryComposition(
-        total_bytes=TOTAL_SYS_MEM,
-        used_bytes=used_bytes,
-        free_bytes=free_bytes,
+        total_bytes=total,
+        used_bytes=used,
+        free_bytes=free,
         percent=percent
     )
     
-    # 2. Fetch current active leaks/anomalies from Predictions table
+    # Fetch current active leaks/anomalies from Predictions table
     stmt = (
         select(Prediction)
         .where(Prediction.prediction_type == "leak_anomaly")
         .order_by(desc(Prediction.timestamp))
-        .limit(20) # recent ones
+        .limit(20)
     )
     result = await db.execute(stmt)
     predictions = result.scalars().all()
     
     anomalies = []
-    
-    # De-duplicate by PID (we only want the latest prediction per active PID)
     seen_pids = set()
     
     for p in predictions:
         if p.entity_type == "process" and p.entity_id not in seen_pids:
             seen_pids.add(p.entity_id)
-            
             payload = p.payload or {}
-            
             anomalies.append(MemoryAnomaly(
                 pid=int(p.entity_id),
                 score=p.score,
@@ -96,8 +89,8 @@ async def get_memory_intelligence(db: AsyncSession = Depends(get_db)):
                 time_to_exhaustion_sec=payload.get("estimated_time_to_exhaustion_sec"),
                 llm_explanation=payload.get("llm_explanation")
             ))
-            
-    return MemoryResponse(
-        composition=composition,
-        anomalies=anomalies
-    )
+    
+    resp = MemoryResponse(composition=composition, anomalies=anomalies)
+    _cache["data"] = resp
+    _cache["last_update"] = now
+    return resp
