@@ -106,7 +106,7 @@ export default function OSUniverseCanvas() {
   );
 
   return (
-    <div className="w-full h-full bg-[#05060a]">
+    <div className="w-full h-full void-gradient relative noise overflow-hidden">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -119,25 +119,45 @@ export default function OSUniverseCanvas() {
         minZoom={0.1}
         maxZoom={4}
       >
-        <Controls showInteractive={false} className="bg-black/50 border border-white/10 fill-white" />
+        <Controls showInteractive={false} className="bg-[#080a10]/80 backdrop-blur-xl border border-white/10 fill-white rounded-xl overflow-hidden shadow-2xl" />
         <MiniMap 
           nodeColor={(n) => {
             if (n.id === 'scheduler') return '#22d3ee';
             if (n.id === 'memory') return '#818cf8';
-            return 'rgba(255,255,255,0.2)';
+            if (n.id === 'deadlock') return '#fb923c';
+            return 'rgba(255,255,255,0.1)';
           }} 
-          maskColor="rgba(0,0,0,0.8)" 
-          className="bg-[#080a10] border border-white/10" 
+          maskColor="rgba(0,0,0,0.6)" 
+          className="bg-[#080a10]/50 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl" 
         />
-        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(255,255,255,0.05)" />
+        {/* Deep starfield-like background */}
+        <Background 
+           variant={BackgroundVariant.Dots} 
+           gap={32} 
+           size={1.5} 
+           color="rgba(255,255,255,0.06)" 
+           style={{ backgroundColor: 'transparent' }}
+        />
+        <Background 
+           variant={BackgroundVariant.Dots} 
+           gap={120} 
+           size={2} 
+           color="rgba(255,255,255,0.03)" 
+           style={{ backgroundColor: 'transparent' }}
+        />
       </ReactFlow>
       
       {/* Title Overlay */}
-      <div className="absolute top-6 left-6 z-10 select-none pointer-events-none">
-        <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white to-white/40">
-          KernelSense OS Universe
-        </h1>
-        <p className="text-xs text-white/30 uppercase tracking-[0.2em] mt-1">Live System Telemetry Canvas</p>
+      <div className="absolute top-8 left-8 z-10 select-none pointer-events-none">
+        <div className="flex items-center gap-3 mb-1">
+           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+           <h1 className="text-3xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/30 drop-shadow-lg">
+             KernelSense
+           </h1>
+        </div>
+        <p className="text-[10px] text-cyan-400/80 font-mono uppercase tracking-[0.3em] font-medium ml-5 drop-shadow">
+           Operating System Digital Twin
+        </p>
       </div>
       
       <AITutor />
