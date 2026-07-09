@@ -37,31 +37,18 @@ async def get_active_incidents(db: AsyncSession = Depends(get_db)):
     incidents = []
     
     for p in predictions:
-        payload = p.payload or {}
-        # The Incident Engine marks predictions as 'active' if they cross the threshold
-        if payload.get("incident_status") == "active":
-            
+        if (p.payload or {}).get("incident_status") == "active":
             explanation = None
-            # Only provide LLM Root Cause analysis if clearance is high enough
             if tier in ["research", "kernel", "power"]:
                 req = IncidentExplanationRequest(
-                    prediction_type=p.prediction_type,
-                    entity_id=p.entity_id,
-                    score=p.score,
-                    confidence=p.confidence or 0.0,
-                    telemetry_signals={"raw_score": p.score} # Minimal context
+                    prediction_type=p.prediction_type, entity_id=p.entity_id,
+                    score=p.score, confidence=p.confidence or 0.0, telemetry_signals={"raw_score": p.score}
                 )
-                # This fetches from the local cache if already processed to bound costs
                 explanation = await generate_incident_explanation(p.id, req)
             
             incidents.append(IncidentResponse(
-                id=p.id,
-                timestamp=p.timestamp,
-                entity_type=p.entity_type,
-                entity_id=p.entity_id,
-                incident_type=p.prediction_type,
-                severity_score=p.score,
-                explanation=explanation
+                id=p.id, timestamp=p.timestamp, entity_type=p.entity_type, entity_id=p.entity_id,
+                incident_type=p.prediction_type, severity_score=p.score, explanation=explanation
             ))
             
     return incidents

@@ -47,23 +47,8 @@ async def get_dvr_history(minutes: int = 5, limit: int = 300, db: AsyncSession =
         if p.timestamp not in proc_by_ts:
             proc_by_ts[p.timestamp] = []
         
-        # Format similar to TelemetryPayload
-        proc_by_ts[p.timestamp].append({
-            "pid": p.pid,
-            "ppid": p.ppid,
-            "name": p.name,
-            "status": p.status,
-            "create_time": p.create_time,
-            "cpu_percent": p.cpu_percent,
-            "mem_rss_bytes": p.mem_rss_bytes,
-            "mem_vms_bytes": p.mem_vms_bytes,
-            "num_threads": p.num_threads,
-            "io_read_bytes": p.io_read_bytes,
-            "io_write_bytes": p.io_write_bytes,
-            "open_files": p.open_files,
-            "sockets": p.sockets,
-            "permissions": p.permissions
-        })
+        from backend.app.api.processes import ProcessResponse
+        proc_by_ts[p.timestamp].append(ProcessResponse.model_validate(p).model_dump())
 
     # 3. Construct the Timeline Array
     history_frames = []

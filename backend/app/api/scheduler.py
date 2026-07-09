@@ -35,6 +35,9 @@ class RawEventResponse(BaseModel):
     timestamp: float
     event_type: str
     value: int
+    
+    class Config:
+        from_attributes = True
 
 @router.get("/", response_model=SchedulerMetricsResponse)
 async def get_scheduler_metrics(db: AsyncSession = Depends(get_db)):
@@ -105,11 +108,4 @@ async def get_raw_events(limit: int = 50, db: AsyncSession = Depends(get_db)):
             ) for i in range(limit)
         ]
         
-    return [
-        RawEventResponse(
-            id=e.id,
-            timestamp=e.timestamp,
-            event_type=e.event_type,
-            value=e.value
-        ) for e in events
-    ]
+    return list(events)

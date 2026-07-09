@@ -46,24 +46,8 @@ async def get_memory_intelligence(db: AsyncSession = Depends(get_db)):
     result = await db.execute(stmt)
     latest = result.scalars().first()
     
-    if latest and latest.mem_total_bytes > 0:
-        total = latest.mem_total_bytes
-        used = latest.mem_used_bytes
-        free = total - used
-        percent = latest.mem_percent
-    else:
-        # Fallback if DB is empty
-        total = 16 * 1024 * 1024 * 1024
-        used = 0
-        free = total
-        percent = 0.0
-        
-    composition = MemoryComposition(
-        total_bytes=total,
-        used_bytes=used,
-        free_bytes=free,
-        percent=percent
-    )
+    total, used, percent = (latest.mem_total_bytes, latest.mem_used_bytes, latest.mem_percent) if latest and latest.mem_total_bytes > 0 else (16 * 1024**3, 0, 0.0)
+    composition = MemoryComposition(total_bytes=total, used_bytes=used, free_bytes=total - used, percent=percent)
     
     # Fetch current active leaks/anomalies from Predictions table
     stmt = (

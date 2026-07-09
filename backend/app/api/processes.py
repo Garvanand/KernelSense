@@ -41,11 +41,4 @@ async def list_processes(limit: int = 50, db: AsyncSession = Depends(get_db)):
     
     tier = AccessState.get_tier()
     
-    # Convert SQLAlchemy models to dicts and filter them
-    filtered = []
-    for p in processes:
-        # Convert ORM to dict using Pydantic
-        p_dict = ProcessResponse.model_validate(p).model_dump()
-        filtered.append(filter_process_dict(p_dict, tier))
-        
-    return filtered
+    return [filter_process_dict(ProcessResponse.model_validate(p).model_dump(), tier) for p in processes]
