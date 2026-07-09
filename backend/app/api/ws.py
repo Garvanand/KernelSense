@@ -27,12 +27,16 @@ class ConnectionManager:
         if not self.active_connections:
             return
 
+        from backend.app.core.crypto import encrypt_string
+
         payload = json.dumps({"topic": topic, "data": data}, default=str)
+        # Encrypt the payload for meaningful security in transit
+        encrypted_payload = encrypt_string(payload)
         
         # We need to create tasks for all sends so a slow client doesn't block the loop
         tasks = []
         for connection in self.active_connections:
-            tasks.append(asyncio.create_task(self._send(connection, payload)))
+            tasks.append(asyncio.create_task(self._send(connection, encrypted_payload)))
             
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)

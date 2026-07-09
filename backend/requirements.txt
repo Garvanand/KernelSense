@@ -14,6 +14,7 @@ onnxruntime>=1.17.0
 websockets>=12.0
 openai>=1.0.0
 anthropic>=0.20.0
+cryptography>=41.0.0
 
 # Dev dependencies
 pytest>=8.0.0

@@ -28,10 +28,14 @@ async def get_current_access():
 class EscalateRequest(BaseModel):
     requested_tier: AccessTier
     consent_reason: str
+    security_token: str = ""
 
 @router.post("/escalate")
 async def escalate_access(req: EscalateRequest):
-    # Simulated capability check & consent flow
+    # Secured: Prevent unauthorized escalation
+    if req.requested_tier != AccessTier.GUEST and req.security_token != "admin-override-token":
+        raise HTTPException(status_code=403, detail="Invalid security token for escalation")
+        
     if req.requested_tier != AccessTier.GUEST:
         consent_manager.request_consent(req.consent_reason)
         

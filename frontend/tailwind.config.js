@@ -7,85 +7,49 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        void: "var(--void)",
-        "depth-1": "var(--depth-1)",
-        "depth-2": "var(--depth-2)",
-        "depth-3": "var(--depth-3)",
-        // Subsystem semantic colors
-        process: "var(--color-process)",
-        memory: "var(--color-memory)",
-        scheduler: "var(--color-scheduler)",
-        network: "var(--color-network)",
-        filesystem: "var(--color-filesystem)",
-        ai: "var(--color-ai)",
-        kernel: "var(--color-kernel)",
+        void: "#000000",
+        "depth-1": "#050505",
+        "depth-2": "#0a0a0a",
+        "depth-3": "#111111",
+        // Subsystem semantic colors - all stark terminal green/cyan
+        process: "#00ff00",
+        memory: "#00cc00",
+        scheduler: "#33ff33",
+        network: "#00ffcc",
+        filesystem: "#00cccc",
+        ai: "#0099ff",
+        kernel: "#ff0033",
         // Severity
-        normal: "var(--severity-normal)",
-        elevated: "var(--severity-elevated)",
-        warning: "var(--severity-warning)",
-        critical: "var(--severity-critical)",
-        prediction: "var(--severity-prediction)",
+        normal: "#00ff00",
+        elevated: "#ffff00",
+        warning: "#ff9900",
+        critical: "#ff0000",
+        prediction: "#00ffff",
         // Surface
         surface: {
-          DEFAULT: "var(--surface)",
-          hover: "var(--surface-hover)",
-          active: "var(--surface-active)",
-          border: "var(--surface-border)",
+          DEFAULT: "rgba(0, 255, 0, 0.05)",
+          hover: "rgba(0, 255, 0, 0.1)",
+          active: "rgba(0, 255, 0, 0.2)",
+          border: "rgba(0, 255, 0, 0.4)",
         },
       },
       fontFamily: {
-        sans: ["'Inter'", "system-ui", "sans-serif"],
-        mono: ["'JetBrains Mono'", "'Fira Code'", "monospace"],
-      },
-      fontSize: {
-        "2xs": ["0.625rem", { lineHeight: "0.875rem" }],
+        sans: ["'JetBrains Mono'", "monospace"], // Force monospace
+        mono: ["'JetBrains Mono'", "monospace"],
       },
       animation: {
-        "fade-in": "fade-in 0.5s var(--ease-out-expo)",
-        "slide-up": "slide-up 0.5s var(--ease-out-expo)",
-        "slide-down": "slide-down 0.5s var(--ease-out-expo)",
-        "slide-right": "slide-right 0.4s var(--ease-out-expo)",
-        "scale-in": "scale-in 0.3s var(--ease-out-expo)",
-        "pulse-subtle": "pulse-subtle 4s ease-in-out infinite",
-        "spin-slow": "spin 8s linear infinite",
-        "breathe": "breathe 4s ease-in-out infinite",
+        "fade-in": "fade-in 0.1s linear",
+        "blink": "blink 1s step-end infinite",
       },
       keyframes: {
         "fade-in": {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
-        "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(16px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        "blink": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
         },
-        "slide-down": {
-          "0%": { opacity: "0", transform: "translateY(-16px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "slide-right": {
-          "0%": { opacity: "0", transform: "translateX(-16px)" },
-          "100%": { opacity: "1", transform: "translateX(0)" },
-        },
-        "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.95)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
-        },
-        "pulse-subtle": {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "0.8" },
-        },
-        "breathe": {
-          "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.02)" },
-        },
-      },
-      transitionTimingFunction: {
-        "out-expo": "var(--ease-out-expo)",
-        "in-out-expo": "var(--ease-in-out-expo)",
-      },
-      borderRadius: {
-        "4xl": "2rem",
       },
     },
   },
