@@ -33,38 +33,28 @@ class IncidentEngineWorker:
             result = await session.execute(stmt)
             predictions = result.scalars().all()
             
+            incidents_payload = []
+            updated = False
             for p in predictions:
                 payload = p.payload or {}
-                # Only process if it hasn't been evaluated
                 if "incident_status" not in payload:
-                    # Threshold check: requires a score above 0.8
-                    if p.score > 0.8:
-                        payload["incident_status"] = "active"
-                    else:
-                        payload["incident_status"] = "dropped"
-                        
+                    payload["incident_status"] = "active" if p.score > 0.8 else "dropped"
                     p.payload = payload
                     session.add(p)
+                    updated = True
                     
-            await session.commit()
-            
-            # Broadcast updated active incidents
-            stmt_all = select(Prediction).where(Prediction.score > 0.8)
-            result_all = await session.execute(stmt_all)
-            active = result_all.scalars().all()
-            
-            incidents_payload = []
-            for a in active:
-                payload = a.payload or {}
                 if payload.get("incident_status") == "active":
                     incidents_payload.append({
-                        "id": str(a.id),
-                        "entity_type": a.entity_type,
-                        "entity_id": a.entity_id,
-                        "incident_type": a.anomaly_type,
-                        "severity_score": a.score,
+                        "id": str(p.id),
+                        "entity_type": p.entity_type,
+                        "entity_id": p.entity_id,
+                        "incident_type": getattr(p, "anomaly_type", "unknown"),
+                        "severity_score": p.score,
                         "explanation": payload.get("explanation", {})
                     })
                     
+            if updated:
+                await session.commit()
+            
             if incidents_payload:
                 asyncio.create_task(ws_manager.broadcast("incidents", incidents_payload))

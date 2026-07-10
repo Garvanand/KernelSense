@@ -89,44 +89,12 @@ class TelemetryIngestWorker:
                 async with session.begin():
                     for payload in batch:
                         # Resource Metric
-                        rm = ResourceMetric(
-                            timestamp=payload.timestamp,
-                            cpu_user_percent=payload.system_metrics.cpu_user_percent,
-                            cpu_system_percent=payload.system_metrics.cpu_system_percent,
-                            cpu_idle_percent=payload.system_metrics.cpu_idle_percent,
-                            mem_total_bytes=payload.system_metrics.mem_total_bytes,
-                            mem_used_bytes=payload.system_metrics.mem_used_bytes,
-                            mem_percent=payload.system_metrics.mem_percent,
-                            disk_read_bytes=payload.system_metrics.disk_read_bytes,
-                            disk_write_bytes=payload.system_metrics.disk_write_bytes,
-                            net_bytes_sent=payload.system_metrics.net_bytes_sent,
-                            net_bytes_recv=payload.system_metrics.net_bytes_recv,
-                            linux_iowait_percent=payload.system_metrics.linux_iowait_percent,
-                            macos_wired_bytes=payload.system_metrics.macos_wired_bytes,
-                            windows_commit_bytes=payload.system_metrics.windows_commit_bytes
-                        )
-                        session.add(rm)
+                        sys_metrics_dict = payload.system_metrics.model_dump(exclude={'cpu_percent', 'linux_load_avg', 'linux_ebpf_sched_latency_ns', 'linux_ebpf_context_switches', 'macos_load_avg', 'windows_etw_context_switches', 'cpu_freq_mhz'})
+                        session.add(ResourceMetric(timestamp=payload.timestamp, **sys_metrics_dict))
                         
                         # Process Snapshots
                         for p in payload.processes:
-                            ps = ProcessSnapshot(
-                                timestamp=payload.timestamp,
-                                pid=p.pid,
-                                ppid=p.ppid,
-                                name=p.name,
-                                status=p.status,
-                                create_time=p.create_time,
-                                cpu_percent=p.cpu_percent,
-                                mem_rss_bytes=p.mem_rss_bytes,
-                                mem_vms_bytes=p.mem_vms_bytes,
-                                num_threads=p.num_threads,
-                                io_read_bytes=p.io_read_bytes,
-                                io_write_bytes=p.io_write_bytes,
-                                open_files=[f.model_dump() for f in p.open_files] if p.open_files else None,
-                                sockets=[s.model_dump() for s in p.sockets] if p.sockets else None,
-                                permissions=p.permissions.model_dump() if p.permissions else None
-                            )
-                            session.add(ps)
+                            session.add(ProcessSnapshot(timestamp=payload.timestamp, **p.model_dump(exclude={'num_fds', 'cpu_affinity'})))
                             
                         # Scheduler events (if any)
                         if payload.system_metrics.linux_ebpf_context_switches:
