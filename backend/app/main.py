@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.core.config import settings
 from backend.app.core.logging import setup_logging
-from backend.app.api import processes, resources, health, access, memory, scheduler, incidents, ws, dvr
+from backend.app.api import processes, resources, health, access, auth, memory, scheduler, incidents, ws, dvr
 
 from backend.app.db.database import engine
 from backend.app.db.models.base import Base
@@ -78,6 +78,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(health.router, prefix="/api/v1/health", tags=["health"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(access.router, prefix="/api/v1/access", tags=["access"])
 app.include_router(memory.router, prefix="/api/v1/memory", tags=["memory"])
 app.include_router(scheduler.router, prefix="/api/v1/scheduler", tags=["scheduler"])

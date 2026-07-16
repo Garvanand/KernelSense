@@ -87,32 +87,35 @@ class TelemetryIngestWorker:
         try:
             async with self.session_maker() as session:
                 async with session.begin():
+                    all_objects = []
                     for payload in batch:
                         # Resource Metric
                         sys_metrics_dict = payload.system_metrics.model_dump(exclude={'cpu_percent', 'linux_load_avg', 'linux_ebpf_sched_latency_ns', 'linux_ebpf_context_switches', 'macos_load_avg', 'windows_etw_context_switches', 'cpu_freq_mhz'})
-                        session.add(ResourceMetric(timestamp=payload.timestamp, **sys_metrics_dict))
+                        all_objects.append(ResourceMetric(timestamp=payload.timestamp, **sys_metrics_dict))
                         
                         # Process Snapshots
                         for p in payload.processes:
-                            session.add(ProcessSnapshot(timestamp=payload.timestamp, **p.model_dump(exclude={'num_fds', 'cpu_affinity'})))
+                            all_objects.append(ProcessSnapshot(timestamp=payload.timestamp, **p.model_dump(exclude={'num_fds', 'cpu_affinity'})))
                             
                         # Scheduler events (if any)
                         if payload.system_metrics.linux_ebpf_context_switches:
-                            se = SchedulerEvent(
+                            all_objects.append(SchedulerEvent(
                                 timestamp=payload.timestamp,
                                 event_type="context_switch",
                                 value=payload.system_metrics.linux_ebpf_context_switches
-                            )
-                            session.add(se)
+                            ))
+                    
+                    # Bulk insert all objects at once
+                    session.add_all(all_objects)
                             
-                    # Data Retention Policy: Auto-purge records older than 1 hour (3600 seconds) to prevent DB bloat
+                    # Data Retention Policy: Auto-purge records older than 1 hour
                     cutoff_time = batch[-1].timestamp - 3600
                     from sqlalchemy import delete
                     await session.execute(delete(ResourceMetric).where(ResourceMetric.timestamp < cutoff_time))
                     await session.execute(delete(ProcessSnapshot).where(ProcessSnapshot.timestamp < cutoff_time))
                     
                 await session.commit()
-                logger.debug("batch_flushed_and_purged", count=len(batch))
+                logger.debug("batch_flushed_and_purged", count=len(batch), objects=len(all_objects))
         except Exception as e:
             logger.error("flush_failed", error=str(e), trace=traceback.format_exc())
             # In a resilient system, we might re-queue the batch or drop it.
