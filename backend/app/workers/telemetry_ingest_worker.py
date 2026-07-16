@@ -104,8 +104,15 @@ class TelemetryIngestWorker:
                                 value=payload.system_metrics.linux_ebpf_context_switches
                             )
                             session.add(se)
+                            
+                    # Data Retention Policy: Auto-purge records older than 1 hour (3600 seconds) to prevent DB bloat
+                    cutoff_time = batch[-1].timestamp - 3600
+                    from sqlalchemy import delete
+                    await session.execute(delete(ResourceMetric).where(ResourceMetric.timestamp < cutoff_time))
+                    await session.execute(delete(ProcessSnapshot).where(ProcessSnapshot.timestamp < cutoff_time))
+                    
                 await session.commit()
-                logger.debug("batch_flushed", count=len(batch))
+                logger.debug("batch_flushed_and_purged", count=len(batch))
         except Exception as e:
             logger.error("flush_failed", error=str(e), trace=traceback.format_exc())
             # In a resilient system, we might re-queue the batch or drop it.

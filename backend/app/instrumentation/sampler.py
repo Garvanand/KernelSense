@@ -36,8 +36,22 @@ class TelemetrySampler:
     def start(self):
         self.running = True
         logger.info("sampler_started", interval=self.interval_sec)
+        
+        base_interval = self.interval_sec
+        
         while self.running:
+            start_time = time.perf_counter()
             self._sample_once()
+            duration = time.perf_counter() - start_time
+            
+            # Adaptive Backoff: If duration exceeds the budget, dynamically throttle the interval
+            if duration > self.cpu_budget_warn_threshold_sec:
+                self.interval_sec = min(base_interval * 5, self.interval_sec * 1.5)
+                logger.warning("adaptive_backoff_engaged", duration=duration, new_interval=self.interval_sec)
+            else:
+                # Slowly recover back to base interval if we are under budget
+                self.interval_sec = max(base_interval, self.interval_sec * 0.9)
+                
             time.sleep(self.interval_sec)
             
     def stop(self):
