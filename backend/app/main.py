@@ -22,6 +22,8 @@ from backend.app.ml.incident_engine import IncidentEngineWorker
 
 # Setup structured logging
 setup_logging()
+import structlog
+logger = structlog.get_logger()
 
 # Global worker references
 ingest_worker = None
@@ -48,11 +50,14 @@ async def lifespan(app: FastAPI):
     # Start background ingest worker
     global ingest_worker, incident_worker
     
-    # 1. Start Telemetry Ingestion
-    collector = get_collector()
-    sampler = TelemetrySampler(collector, interval_sec=1.0) # 1 Hz
-    ingest_worker = TelemetryIngestWorker(sampler)
-    await ingest_worker.start()
+    # 1. Start Telemetry Ingestion (only if this instance is an agent)
+    if settings.COLLECTOR_ENABLED:
+        collector = get_collector()
+        sampler = TelemetrySampler(collector, interval_sec=settings.SAMPLING_INTERVAL_SEC)
+        ingest_worker = TelemetryIngestWorker(sampler)
+        await ingest_worker.start()
+    else:
+        logger.info("collector_disabled", msg="Running in server-only mode (no local collector)")
     
     # 2. Start Incident Engine
     incident_worker = IncidentEngineWorker()

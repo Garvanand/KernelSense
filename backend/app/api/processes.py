@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.db.database import get_db
 from backend.app.db.repositories.telemetry import TelemetryRepository
 from pydantic import BaseModel
 from typing import List, Optional, Any
-from backend.app.access.state import AccessState
+from backend.app.api.access import get_tier_from_token
 from backend.app.access.level_policy import filter_process_dict
 
 router = APIRouter()
@@ -34,11 +34,11 @@ class ProcessResponse(BaseModel):
         from_attributes = True
 
 @router.get("/", response_model=List[ProcessResponse])
-async def list_processes(limit: int = 50, db: AsyncSession = Depends(get_db)):
-    """Get the latest snapshot of processes sorted by CPU usage. Enforces access level."""
+async def list_processes(limit: int = 50, db: AsyncSession = Depends(get_db), authorization: str = Header(default="")):
+    """Get the latest snapshot of processes sorted by CPU usage. Enforces per-request access level."""
     repo = TelemetryRepository(db)
     processes = await repo.get_latest_processes(limit=limit)
     
-    tier = AccessState.get_tier()
+    tier = get_tier_from_token(authorization)
     
     return [filter_process_dict(ProcessResponse.model_validate(p).model_dump(), tier) for p in processes]

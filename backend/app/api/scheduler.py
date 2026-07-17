@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from backend.app.db.database import get_db
 from backend.app.db.repositories.telemetry import TelemetryRepository
 from backend.app.db.models.scheduler_event import SchedulerEvent
 from backend.app.db.models.resource_metric import ResourceMetric
-from backend.app.access.state import AccessState
+from backend.app.api.access import get_tier_from_token
 from pydantic import BaseModel
 from typing import List, Optional
 import psutil
@@ -79,14 +79,14 @@ async def get_scheduler_metrics(db: AsyncSession = Depends(get_db)):
     return resp
 
 @router.get("/events", response_model=List[RawEventResponse])
-async def get_raw_events(limit: int = 50, db: AsyncSession = Depends(get_db)):
-    """Get raw scheduler event stream. Gated to Kernel/Research levels."""
+async def get_raw_events(limit: int = 50, db: AsyncSession = Depends(get_db), authorization: str = Header(default="")):
+    """Get raw scheduler event stream. Gated to Research level."""
     
-    tier = AccessState.get_tier()
-    if tier not in ["kernel", "research"]:
+    tier = get_tier_from_token(authorization)
+    if tier.value not in ["kernel", "research"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Raw scheduler telemetry requires Kernel or Research clearance."
+            detail="Raw scheduler telemetry requires Research clearance."
         )
         
     stmt = (

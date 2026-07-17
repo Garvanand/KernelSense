@@ -25,8 +25,8 @@ export default function Home() {
                 </div>
             </div>
             <div className="text-right text-[10px] opacity-70">
-                <div>ENCRYPTION: AES-256-GCM // WEB CRYPTO API</div>
-                <div>ADAPTIVE POLLING // DATA RETENTION: 1H</div>
+                <div>AES-256-GCM // HKDF-SHA256 DERIVED KEYS</div>
+                <div>FIRST-MESSAGE AUTH // PER-TOKEN RBAC</div>
             </div>
         </header>
         

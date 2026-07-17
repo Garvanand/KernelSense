@@ -3,7 +3,6 @@ import uuid
 import os
 
 def _get_or_create_agent_id() -> str:
-    """Generate a persistent agent UUID stored in a dotfile."""
     id_file = os.path.join(os.path.expanduser("~"), ".kernelsense_agent_id")
     if os.path.exists(id_file):
         return open(id_file).read().strip()
@@ -17,20 +16,27 @@ class Settings(BaseSettings):
     PROJECT_TAGLINE: str = "Predictive OS Observatory"
     API_V1_STR: str = "/api/v1"
     
-    # Agent identity (unique per installation)
     AGENT_ID: str = _get_or_create_agent_id()
-    
-    # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./kernelsense.db"
     
-    # Telemetry configuration
+    # Telemetry
     SAMPLING_INTERVAL_SEC: float = 1.0
     INGEST_BATCH_SIZE: int = 50
-    
-    # Data retention: auto-purge records older than this (seconds)
     DATA_RETENTION_SEC: int = 3600
+    
+    # Architecture: separate agent from server
+    COLLECTOR_ENABLED: bool = True  # Set False to run server-only (no local collector)
+    
+    # Alerting thresholds
+    ALERT_CPU_THRESHOLD: float = 90.0  # percent
+    ALERT_MEM_THRESHOLD: float = 85.0  # percent
+    ALERT_WEBHOOK_URL: str = ""  # Slack/PagerDuty webhook
+    
+    # Anomaly detection
+    ANOMALY_ZSCORE_THRESHOLD: float = 2.5
     
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
 settings = Settings()
+
 

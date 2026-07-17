@@ -2,17 +2,14 @@ import asyncio
 import json
 from collections import defaultdict
 from typing import Dict, Any
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import structlog
-import time
 
-from backend.app.core.crypto import verify_session_token, encrypt_json
+from backend.app.core.crypto import verify_session_token, encrypt_for_broadcast
 
 logger = structlog.get_logger()
-
 router = APIRouter()
 
-# Rate limiting: max connections per IP
 _MAX_CONNECTIONS_PER_IP = 5
 _connections_by_ip: Dict[str, int] = defaultdict(int)
 
@@ -20,53 +17,40 @@ _connections_by_ip: Dict[str, int] = defaultdict(int)
 class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
-        # Bounded queue per connection for backpressure (Phase 2A)
         self._queues: Dict[WebSocket, asyncio.Queue] = {}
         self._send_tasks: Dict[WebSocket, asyncio.Task] = {}
 
     async def connect(self, websocket: WebSocket):
-        await websocket.accept()
         self.active_connections.append(websocket)
-        
-        # Create a bounded outbound queue for this connection
         queue: asyncio.Queue = asyncio.Queue(maxsize=100)
         self._queues[websocket] = queue
         self._send_tasks[websocket] = asyncio.create_task(self._drain_queue(websocket, queue))
-        
         logger.info("ws_client_connected", active_clients=len(self.active_connections))
 
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-        # Cancel the drain task
         task = self._send_tasks.pop(websocket, None)
         if task:
             task.cancel()
         self._queues.pop(websocket, None)
-        
-        # Decrement IP counter
         client_ip = websocket.client.host if websocket.client else "unknown"
-        _connections_by_ip[client_ip] = max(0, _connections_by_ip[client_ip] - 1)
-        
+        if _connections_by_ip[client_ip] > 0:
+            _connections_by_ip[client_ip] -= 1
         logger.info("ws_client_disconnected", active_clients=len(self.active_connections))
 
     async def broadcast(self, topic: str, data: Any):
-        """Encrypt and enqueue data to all connected clients with backpressure."""
         if not self.active_connections:
             return
-
-        # Encrypt the entire payload with AES-256-GCM
-        encrypted_hex = encrypt_json({"topic": topic, "data": data})
-        
+        encrypted_hex = encrypt_for_broadcast({"topic": topic, "data": data})
         stale = []
-        for ws in self.active_connections:
+        for ws in list(self.active_connections):
             queue = self._queues.get(ws)
             if queue is None:
                 continue
             try:
                 queue.put_nowait(encrypted_hex)
             except asyncio.QueueFull:
-                # Backpressure: drop oldest frame, enqueue new one
                 try:
                     queue.get_nowait()
                 except asyncio.QueueEmpty:
@@ -75,12 +59,10 @@ class ConnectionManager:
                     queue.put_nowait(encrypted_hex)
                 except asyncio.QueueFull:
                     stale.append(ws)
-                    
         for ws in stale:
             self.disconnect(ws)
-            
+
     async def _drain_queue(self, websocket: WebSocket, queue: asyncio.Queue):
-        """Background task that sends queued messages to the client."""
         try:
             while True:
                 message = await queue.get()
@@ -93,28 +75,56 @@ class ConnectionManager:
             pass
 
 
-# Global connection manager instance
 manager = ConnectionManager()
 
 
 @router.websocket("/stream")
-async def websocket_endpoint(websocket: WebSocket, token: str = Query(default="")):
-    # Phase 1D: Authenticate before accepting
-    if not token or not verify_session_token(token, required_scope="dashboard"):
-        await websocket.close(code=4001, reason="Unauthorized: invalid or missing token")
-        return
+async def websocket_endpoint(websocket: WebSocket):
+    # Accept first, then authenticate via first message (token NOT in URL)
+    await websocket.accept()
     
-    # Rate limiting per IP
+    # Rate limit per IP
     client_ip = websocket.client.host if websocket.client else "unknown"
     if _connections_by_ip[client_ip] >= _MAX_CONNECTIONS_PER_IP:
-        await websocket.close(code=4029, reason="Too many connections from this IP")
+        await websocket.send_text(json.dumps({"error": "rate_limited", "detail": "Too many connections"}))
+        await websocket.close(code=4029)
         return
     _connections_by_ip[client_ip] += 1
     
+    # Wait for auth message (first message must be auth)
+    try:
+        auth_raw = await asyncio.wait_for(websocket.receive_text(), timeout=10.0)
+        auth_msg = json.loads(auth_raw)
+        
+        if auth_msg.get("type") != "auth" or not auth_msg.get("token"):
+            await websocket.send_text(json.dumps({"error": "auth_required", "detail": "First message must be {type: 'auth', token: '...'}"}))
+            await websocket.close(code=4001)
+            _connections_by_ip[client_ip] = max(0, _connections_by_ip[client_ip] - 1)
+            return
+        
+        claims = verify_session_token(auth_msg["token"], required_scope="dashboard")
+        if not claims:
+            await websocket.send_text(json.dumps({"error": "unauthorized", "detail": "Invalid or expired token"}))
+            await websocket.close(code=4001)
+            _connections_by_ip[client_ip] = max(0, _connections_by_ip[client_ip] - 1)
+            return
+        
+        # Auth success — send confirmation
+        await websocket.send_text(json.dumps({"type": "auth_ok", "tier": claims.get("tier", "guest")}))
+        
+    except asyncio.TimeoutError:
+        await websocket.close(code=4001, reason="Auth timeout")
+        _connections_by_ip[client_ip] = max(0, _connections_by_ip[client_ip] - 1)
+        return
+    except Exception:
+        await websocket.close(code=4001)
+        _connections_by_ip[client_ip] = max(0, _connections_by_ip[client_ip] - 1)
+        return
+    
+    # Authenticated — register for broadcast
     await manager.connect(websocket)
     try:
         while True:
-            # Keep connection alive; read to detect disconnects
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
