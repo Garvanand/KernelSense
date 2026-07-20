@@ -1,8 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { EnterpriseDashboard } from "@/components/ui/enterprise-dashboard";
-import { ShieldCheck } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import to avoid SSR issues with ReactFlow
+const OSUniverseCanvas = dynamic(
+  () => import("@/components/universe/os-canvas"),
+  { ssr: false, loading: () => (
+    <div className="w-screen h-screen bg-[#03050d] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping" />
+        <p className="text-[10px] text-white/30 font-mono uppercase tracking-[0.3em]">Initializing OS Digital Twin...</p>
+      </div>
+    </div>
+  )}
+);
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -11,29 +23,13 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) return (
+    <div className="w-screen h-screen bg-[#03050d]" />
+  );
 
   return (
-    <div className="w-screen h-screen bg-black text-[#00ff00] p-3 flex flex-col noise">
-      <div className="w-full h-full flex flex-col border border-[#00ff00]/30 bg-black/95 shadow-[0_0_40px_rgba(0,255,0,0.08)]">
-        <header className="border-b border-[#00ff00]/30 px-4 py-2 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-3">
-                <ShieldCheck size={24} />
-                <div>
-                    <h1 className="text-2xl font-mono font-bold tracking-widest leading-none">KERNEL_SENSE</h1>
-                    <p className="text-[9px] uppercase tracking-[0.3em] opacity-60 mt-0.5">Predictive OS Observatory</p>
-                </div>
-            </div>
-            <div className="text-right text-[10px] opacity-70">
-                <div>AES-256-GCM // HKDF-SHA256 DERIVED KEYS</div>
-                <div>FIRST-MESSAGE AUTH // PER-TOKEN RBAC</div>
-            </div>
-        </header>
-        
-        <main className="flex-1 overflow-hidden">
-            <EnterpriseDashboard />
-        </main>
-      </div>
+    <div className="w-screen h-screen bg-[#03050d] overflow-hidden">
+      <OSUniverseCanvas />
     </div>
   );
 }
