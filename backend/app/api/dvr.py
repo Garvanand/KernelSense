@@ -33,22 +33,30 @@ async def get_dvr_history(minutes: int = 5, limit: int = 300, db: AsyncSession =
     # Get the timestamps we actually care about
     timestamps = [m.timestamp for m in metrics]
     
-    # 2. Fetch Process Snapshots for these exact timestamps
-    # To avoid massive queries, we might just fetch processes for these timestamps
+    # 2. Fetch Process Snapshots for the time range (avoiding float equality in SQL)
     proc_query = await db.execute(
         select(ProcessSnapshot)
-        .where(ProcessSnapshot.timestamp.in_(timestamps))
+        .where(ProcessSnapshot.timestamp >= start_time)
+        .where(ProcessSnapshot.timestamp <= current_time)
     )
     processes = proc_query.scalars().all()
     
-    # Group processes by timestamp
+    # Group processes by timestamp, using a 0.1s bucket to align floats
     proc_by_ts: Dict[float, List[Any]] = {}
+    
+    # Map metrics to their bucketed timestamps for easier lookup
+    metric_buckets = {round(m.timestamp, 1): m.timestamp for m in metrics}
+    
     for p in processes:
-        if p.timestamp not in proc_by_ts:
-            proc_by_ts[p.timestamp] = []
+        bucket = round(p.timestamp, 1)
+        # Find the exact metric timestamp for this bucket if it exists
+        exact_ts = metric_buckets.get(bucket, p.timestamp)
+        
+        if exact_ts not in proc_by_ts:
+            proc_by_ts[exact_ts] = []
         
         from backend.app.api.processes import ProcessResponse
-        proc_by_ts[p.timestamp].append(ProcessResponse.model_validate(p).model_dump())
+        proc_by_ts[exact_ts].append(ProcessResponse.model_validate(p).model_dump())
 
     # 3. Construct the Timeline Array
     history_frames = []

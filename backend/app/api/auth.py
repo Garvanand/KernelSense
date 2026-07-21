@@ -1,9 +1,11 @@
 import os
-from fastapi import APIRouter, HTTPException, Header
+import structlog
+from fastapi import APIRouter, HTTPException, Header, Query
 from backend.app.core.crypto import (
     generate_session_token, get_broadcast_key_hex, create_session,
 )
 
+logger = structlog.get_logger()
 router = APIRouter()
 
 # In production, this comes from env / secrets manager.
@@ -13,6 +15,7 @@ if not _API_KEY:
     import hashlib
     _API_KEY = hashlib.sha256(b"dev-api-key-kernelsense").hexdigest()[:32]
     os.environ["KERNELSENSE_API_KEY"] = _API_KEY
+    logger.warning("security_warning", msg="KERNELSENSE_API_KEY not set. Falling back to dev-only deterministic key. Do not use in production!")
 
 
 def _require_api_key(x_api_key: str = Header(default="")):
@@ -22,7 +25,10 @@ def _require_api_key(x_api_key: str = Header(default="")):
 
 
 @router.post("/session")
-async def create_dashboard_session(x_api_key: str = Header(default="")):
+async def create_dashboard_session(
+    x_api_key: str = Header(default=""),
+    tier: str = Query("guest", description="RBAC tier to provision (e.g. guest, admin)")
+):
     """
     Authenticated session endpoint.
     Returns:
@@ -33,7 +39,7 @@ async def create_dashboard_session(x_api_key: str = Header(default="")):
     """
     _require_api_key(x_api_key)
     
-    token = generate_session_token(scope="dashboard", tier="guest", ttl_seconds=3600)
+    token = generate_session_token(scope="dashboard", tier=tier, ttl_seconds=3600)
     broadcast_key = get_broadcast_key_hex()
     
     return {

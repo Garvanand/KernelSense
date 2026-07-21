@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     # Anomaly detection
     ANOMALY_ZSCORE_THRESHOLD: float = 2.5
     
+    # LLM settings
+    LLM_PROVIDER: str = "groq"
+    GROQ_API_KEY: str = ""
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
 settings = Settings()

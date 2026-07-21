@@ -64,12 +64,12 @@ async def get_scheduler_metrics(db: AsyncSession = Depends(get_db)):
     
     # Estimate run-queue latency from load
     avg_util = sum(per_core) / len(per_core) if per_core else 0
-    rq_latency = avg_util * 0.12 + random.uniform(0.05, 0.5)
+    rq_latency = avg_util * 0.12
     
     resp = SchedulerMetricsResponse(
         timestamp=now,
         cores=cores,
-        context_switch_rate=cs_rate,
+        contextSwitchRate=cs_rate,
         run_queue_latency_ms=round(rq_latency, 2),
         cpu_freq_mhz=round(cpu_freq_mhz, 0)
     )
